@@ -46,7 +46,8 @@
 
 | # | 산출 | 내용 | 상태 |
 |---|---|---|---|
-| C0 | `rpa_workflow/project.json` | 호환성 Windows, VB.NET, 패키지 5종, 인자 `in_GoodsUrl` | ✅ Mac |
+| C0a | UiPath 스킬 설치(Windows) | `npm i -g @uipath/cli` → `uip auth login` → `uip tools install @uipath/codedagent-tool` → `uip skills install --agent claude` → Claude Code 재시작 | ⏳ Windows |
+| C0b | `rpa_workflow/project.json` | 호환성 Windows, VB.NET, 패키지 5종, 인자 `in_GoodsUrl`. ⚠️ 버전 오타 → 스킬로 재생성 시 교정 | ⚠️ 재생성 |
 | C1 | `Main.xaml` | 오케스트레이션(§5.3): 수집→0건체크→JSON→HTTP POST→처리→결함메일→종합→RPA검증→로그 | ✅ Mac 골격 |
 | C2 | `Scrape_Reviews.xaml` | 라이브 수집(§5.4): Open Browser→리뷰탭→Extract Data 20건→수집검증→Retry 3회(§9.7). **셀렉터 placeholder** | ✅ Mac 골격 / ⏳ Indicate |
 | C3 | `Process_Results.xaml` | JSON 파싱(§5.5)→Master_Log 12컬럼 누적→RED/YELLOW 하이라이트→out defect_count·summary | ✅ Mac 골격 |
@@ -54,9 +55,10 @@
 | C5 | `Generate_Summary_Report.xaml` | 종합리포트 4시트(§5.7) | ✅ Mac 골격 |
 | C6 | `Verify_RPA_Results.xaml` | RPA 실행검증 6항목(§5.9)→execution_log.txt | ✅ Mac 골격 |
 
-- xaml 6개 XML well-formed 검증 통과, project.json JSON 파싱 OK.
-- skills 설치(`uip skills install`) 불필요 — hand-author로 대체.
-- ⚠️ Studio 스키마 엄격 → 안 열리면 액티비티 재배치 필요. 골격/인자/로직 유효.
+- xaml 6개 XML well-formed (텍스트 수준)이나, **Studio 검증 실패** — hand-author 한계 확인됨.
+  - ① `project.json` 패키지 버전 오타 → NuGet 복원 실패(NU1102, 예: Mail 1.23.4 없음→1.23.10).
+  - ② 액티비티 멤버/타입명 스키마 불일치(HttpClient.ResponseContentFormat, BuildDataTable.TableName, DeserializeJson 형식 없음, ExcelScope Body 구조 등).
+- → **`uip skills install --agent claude`로 스킬 설치 후 Windows서 재생성**이 정석(아래 C0 갱신). hand-author xaml은 **로직 설계서**로만 유효.
 
 **마일스톤(나중·Windows)**: Studio서 셀렉터 재캡처 → 서버 기동 → Main 실행 → 라이브 수집→분석→엑셀(RED/YELLOW)→Outlook E2E 1회 + 백업영상.
 
