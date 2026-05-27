@@ -1,0 +1,20 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.venv/
+venv/
+env/
+
+# Secrets
+.env
+ai_server/.env
+
+# OS
+.DS_Store
+
+# UiPath
+rpa_workflow/.local/
+rpa_workflow/.settings/
+*.nupkg

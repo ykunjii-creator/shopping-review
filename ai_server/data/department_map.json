@@ -1,0 +1,22 @@
+{
+  "제품결함": {
+    "department": "품질관리팀",
+    "department_email": "a01039261344@gmail.com"
+  },
+  "배송문제": {
+    "department": "물류팀",
+    "department_email": "a01039261344@gmail.com"
+  },
+  "단순불만": {
+    "department": "고객지원팀",
+    "department_email": "a01039261344@gmail.com"
+  },
+  "긍정": {
+    "department": "마케팅팀",
+    "department_email": "a01039261344@gmail.com"
+  },
+  "미분류": {
+    "department": "고객지원팀",
+    "department_email": "a01039261344@gmail.com"
+  }
+}

@@ -1,0 +1,803 @@
+{
+  "batch_id": "20260527_001",
+  "processed_count": 20,
+  "defect_count": 7,
+  "results": [
+    {
+      "review_id": "R001",
+      "category": "제품결함",
+      "summary": "액정 파손",
+      "department": "품질관리팀",
+      "department_email": "a01039261344@gmail.com",
+      "urgency": "high",
+      "confidence": 0.99,
+      "reasoning": "리뷰에서 배송이 빠르다고 언급했지만 핵심 문제는 '화면 우측 하단에 액정이 깨져서 왔다'는 제품 파손이며, 교환 요청도 있어 제품결함으로 분류했다.",
+      "self_check_notes": "배송 만족 언급보다 액정 파손이 핵심이므로 제품결함 분류가 원문과 일치함.",
+      "external_evidence": "",
+      "original_text": "배송도 빠른데 화면 우측 하단에 액정이 깨져서 왔어요. 교환해주세요.",
+      "original_rating": 2,
+      "review_date": "2026-05-25",
+      "verification": {
+        "rule_based": {
+          "passed": true,
+          "checks": {
+            "summary_length_ok": true,
+            "confidence_in_range": true,
+            "category_valid": true,
+            "urgency_valid": true,
+            "email_format_ok": true,
+            "no_positive_high_urgency": true,
+            "defect_urgency_ok": true,
+            "department_matches": true,
+            "no_hallucination": true
+          },
+          "failed_rules": []
+        },
+        "judge_evaluation": {
+          "score": 9,
+          "passed": true,
+          "reasoning": "카테고리(제품결함)는 화면 액정 파손을 명확히 지적하며 교환 요청도 포함되어 내용과 정확히 일치합니다. 요약(액정 파손) 역시 핵심을 정확히 포착했습니다. 긴급도(high)는 파손품을 즉시 교환받아야 하는 상황이라 적절합니다. confidence(0.99)도 텍스트가 매우 직접적이라 과하지 않으며 전반적으로 사람이 봐도 타당합니다."
+        },
+        "final_status": "verified"
+      }
+    },
+    {
+      "review_id": "R002",
+      "category": "제품결함",
+      "summary": "전원버튼 작동불량",
+      "department": "품질관리팀",
+      "department_email": "a01039261344@gmail.com",
+      "urgency": "high",
+      "confidence": 0.98,
+      "reasoning": "별점은 5점이지만 본문에 전원 버튼이 잘 눌리지 않고 작동이 가끔 멈춘다고 명시되어 있어 제품의 작동 불량으로 판단했다.",
+      "self_check_notes": "별점보다 텍스트 우선 원칙에 따라 작동 불량 표현을 재확인했고 제품결함 분류가 일치함.",
+      "external_evidence": "",
+      "original_text": "별점은 5점 주는데 사실 전원 버튼이 잘 안 눌려요. 작동이 가끔 멈춰요.",
+      "original_rating": 5,
+      "review_date": "2026-05-25",
+      "verification": {
+        "rule_based": {
+          "passed": true,
+          "checks": {
+            "summary_length_ok": true,
+            "confidence_in_range": true,
+            "category_valid": true,
+            "urgency_valid": true,
+            "email_format_ok": true,
+            "no_positive_high_urgency": true,
+            "defect_urgency_ok": true,
+            "department_matches": true,
+            "no_hallucination": true
+          },
+          "failed_rules": []
+        },
+        "judge_evaluation": {
+          "score": 9,
+          "passed": true,
+          "reasoning": "category(제품결함)는 전원 버튼이 잘 안 눌리고 작동이 가끔 멈춘다는 내용과 정확히 일치합니다. summary도 ‘전원버튼 작동불량’으로 핵심을 잘 반영했으며, 실제로 본문에서 가장 구체적으로 언급된 문제를 포착했습니다. urgency는 ‘high’로 설정되었는데, 작동 멈춤 및 전원 버튼 문제는 사용자 불편이 크고 즉시 조치가 필요한 결함으로 볼 수 있어 적절합니다. confidence 0.98 또한 텍스트가 단일한 결함을 직접 말하고 있어 실제 명확성과 잘 부합합니다."
+        },
+        "final_status": "verified"
+      }
+    },
+    {
+      "review_id": "R003",
+      "category": "단순불만",
+      "summary": "색상 차이 불만",
+      "department": "고객지원팀",
+      "department_email": "a01039261344@gmail.com",
+      "urgency": "low",
+      "confidence": 0.96,
+      "reasoning": "리뷰는 색상이 사진과 다르다고만 하며, 제품 결함이나 배송 문제는 언급되지 않았다. 취향에 맞지 않는다는 개인적 불만이 핵심이므로 단순불만으로 분류했다.",
+      "self_check_notes": "원문 재검토 결과, 결함·배송 언급 없이 색상 차이와 취향 불만만 있어 단순불만 분류가 일치함.",
+      "external_evidence": "",
+      "original_text": "색상이 사진이랑 좀 달라요. 제 취향은 아니네요.",
+      "original_rating": 3,
+      "review_date": "2026-05-24",
+      "verification": {
+        "rule_based": {
+          "passed": true,
+          "checks": {
+            "summary_length_ok": true,
+            "confidence_in_range": true,
+            "category_valid": true,
+            "urgency_valid": true,
+            "email_format_ok": true,
+            "no_positive_high_urgency": true,
+            "defect_urgency_ok": true,
+            "department_matches": true,
+            "no_hallucination": true
+          },
+          "failed_rules": []
+        },
+        "judge_evaluation": {
+          "score": 10,
+          "passed": true,
+          "reasoning": "카테고리(단순불만)는 리뷰가 ‘사진과 색상이 다르다’는 불만과 ‘취향에 맞지 않음’만을 말하는 내용과 정확히 일치합니다. summary도 핵심인 색상 차이 불만을 그대로 포착했고, 원문에 심각한 결함/배송/환불 요구 등은 없으므로 urgency=low도 적절합니다. confidence 0.96 또한 분류 근거가 단순하고 명확해 과도하지 않으며 일관됩니다."
+        },
+        "final_status": "verified"
+      }
+    },
+    {
+      "review_id": "R004",
+      "category": "긍정",
+      "summary": "재구매 의사 만족 리뷰",
+      "department": "마케팅팀",
+      "department_email": "a01039261344@gmail.com",
+      "urgency": "low",
+      "confidence": 0.99,
+      "reasoning": "리뷰 텍스트에 만족, 재구매 의사, 강추 등 긍정 표현만 있으며 제품결함·배송문제·불만 언급이 없다.",
+      "self_check_notes": "원문 재검토 결과 긍정 표현만 확인되어 긍정 분류가 일치함.",
+      "external_evidence": "",
+      "original_text": "정말 만족스러워요! 재구매 의사 있습니다. 강추합니다.",
+      "original_rating": 5,
+      "review_date": "2026-05-24",
+      "verification": {
+        "rule_based": {
+          "passed": true,
+          "checks": {
+            "summary_length_ok": true,
+            "confidence_in_range": true,
+            "category_valid": true,
+            "urgency_valid": true,
+            "email_format_ok": true,
+            "no_positive_high_urgency": true,
+            "defect_urgency_ok": true,
+            "department_matches": true,
+            "no_hallucination": true
+          },
+          "failed_rules": []
+        },
+        "judge_evaluation": {
+          "score": 10,
+          "passed": true,
+          "reasoning": "category(긍정)는 “만족스러워요”, “재구매 의사 있습니다”, “강추합니다”로 명확히 일치합니다. summary도 재구매 의사와 만족의 핵심을 정확히 담았습니다. urgency는 불만/긴급 이슈가 전혀 없으므로 low가 적절합니다. confidence 0.99는 텍스트가 긍정 표현만 있어 명확성 측면에서도 과도하지 않습니다."
+        },
+        "final_status": "verified"
+      }
+    },
+    {
+      "review_id": "R005",
+      "category": "배송문제",
+      "summary": "배송 지연",
+      "department": "물류팀",
+      "department_email": "a01039261344@gmail.com",
+      "urgency": "medium",
+      "confidence": 0.99,
+      "reasoning": "리뷰에서 주문 후 일주일이 지났는데도 배송이 오지 않았다고 명시되어 있어 배송문제로 분류했다. 제품 결함이나 다른 불만 언급은 없다.",
+      "self_check_notes": "원문에 배송 지연만 명확히 있어 배송문제로 재확인됨.",
+      "external_evidence": "",
+      "original_text": "주문한 지 일주일이 지났는데 아직도 배송이 안 왔어요.",
+      "original_rating": 1,
+      "review_date": "2026-05-23",
+      "verification": {
+        "rule_based": {
+          "passed": true,
+          "checks": {
+            "summary_length_ok": true,
+            "confidence_in_range": true,
+            "category_valid": true,
+            "urgency_valid": true,
+            "email_format_ok": true,
+            "no_positive_high_urgency": true,
+            "defect_urgency_ok": true,
+            "department_matches": true,
+            "no_hallucination": true
+          },
+          "failed_rules": []
+        },
+        "judge_evaluation": {
+          "score": 10,
+          "passed": true,
+          "reasoning": "category(배송문제)가 “일주일이 지났는데 배송이 안 왔다”는 내용과 정확히 일치합니다. summary(배송 지연)도 핵심 사실을 그대로 포착했습니다. urgency를 medium으로 둔 것도 단순 지연 불만으로 보이며 ‘즉시 위험’ 수준의 정보는 없어 적절합니다. confidence 0.99 역시 텍스트가 매우 명확해 과하지 않습니다."
+        },
+        "final_status": "verified"
+      }
+    },
+    {
+      "review_id": "R006",
+      "category": "배송문제",
+      "summary": "포장박스 찌그러짐",
+      "department": "물류팀",
+      "department_email": "a01039261344@gmail.com",
+      "urgency": "medium",
+      "confidence": 0.95,
+      "reasoning": "포장 박스 훼손과 내용물 눌림이 배송 과정의 문제로 보이며, 원문에 제조 결함 언급은 없다.",
+      "self_check_notes": "원문의 핵심은 배송 중 포장 훼손과 내용물 눌림으로, 배송문제 분류가 일치함.",
+      "external_evidence": "",
+      "original_text": "포장 박스가 다 찌그러져서 도착했어요. 안에 내용물도 눌렸네요.",
+      "original_rating": 2,
+      "review_date": "2026-05-23",
+      "verification": {
+        "rule_based": {
+          "passed": true,
+          "checks": {
+            "summary_length_ok": true,
+            "confidence_in_range": true,
+            "category_valid": true,
+            "urgency_valid": true,
+            "email_format_ok": true,
+            "no_positive_high_urgency": true,
+            "defect_urgency_ok": true,
+            "department_matches": true,
+            "no_hallucination": true
+          },
+          "failed_rules": []
+        },
+        "judge_evaluation": {
+          "score": 9,
+          "passed": true,
+          "reasoning": "분류 정확성: 내용이 “포장 박스가 다 찌그러져 도착”, “안에 내용물도 눌림”으로 배송 과정에서의 훼손 문제를 명확히 말하므로 category가 배송문제에 잘 부합합니다(40%). 요약 적절성: “포장박스 찌그러짐”은 핵심을 잡지만 원문에 있는 “내용물도 눌림”이 요약에 완전히 반영되진 않아 약간 감점됩니다(30%). Urgency 적절성: 별점 2점이고 물품 훼손이므로 medium은 대체로 타당합니다. 즉각적 생명·안전 수준은 아니지만 품질/클레임 필요성이 있어 과하거나 부족하지 않습니다(20%). 일관성: confidence 0.95는 텍스트가 짧고 배송 훼손이 직접적으로 언급되어 명확하므로 전반적으로 적절합니다(10%). 다만 요약에 내용물 눌림까지 포함했으면 더 좋았기에 9점입니다."
+        },
+        "final_status": "verified"
+      }
+    },
+    {
+      "review_id": "R007",
+      "category": "단순불만",
+      "summary": "사이즈 작음",
+      "department": "고객지원팀",
+      "department_email": "a01039261344@gmail.com",
+      "urgency": "low",
+      "confidence": 0.95,
+      "reasoning": "리뷰는 제품의 사이즈가 예상보다 작다고만 밝히며, 사용은 가능하다고 되어 있어 제품결함이나 배송문제보다 단순한 불만으로 판단됨.",
+      "self_check_notes": "원문에 사이즈 불만만 있으며 작동불량·파손·배송 이슈는 없어 단순불만 분류가 일치함.",
+      "external_evidence": "",
+      "original_text": "사이즈가 생각보다 작아요. 그래도 쓸만은 합니다.",
+      "original_rating": 3,
+      "review_date": "2026-05-22",
+      "verification": {
+        "rule_based": {
+          "passed": true,
+          "checks": {
+            "summary_length_ok": true,
+            "confidence_in_range": true,
+            "category_valid": true,
+            "urgency_valid": true,
+            "email_format_ok": true,
+            "no_positive_high_urgency": true,
+            "defect_urgency_ok": true,
+            "department_matches": true,
+            "no_hallucination": true
+          },
+          "failed_rules": []
+        },
+        "judge_evaluation": {
+          "score": 10,
+          "passed": true,
+          "reasoning": "category(단순불만), summary(사이즈 작음)는 원문 핵심과 정확히 일치합니다. urgency도 “그래도 쓸만”이라는 표현으로 심각한 문제나 긴급 이슈가 아닌 점을 반영해 low로 타당합니다. confidence 0.95 역시 텍스트가 짧고 결론이 명확해 실제 명확성과 잘 부합합니다. 전반적으로 사람이 봐도 동의할 만한 분류입니다."
+        },
+        "final_status": "verified"
+      }
+    },
+    {
+      "review_id": "R008",
+      "category": "긍정",
+      "summary": "향 좋고 발림성 만족",
+      "department": "마케팅팀",
+      "department_email": "a01039261344@gmail.com",
+      "urgency": "low",
+      "confidence": 0.99,
+      "reasoning": "리뷰 텍스트에서 향, 발림성에 대한 만족과 재구매 의사가 명확해 긍정으로 분류했다.",
+      "self_check_notes": "원문에 불만·결함·배송문제가 없고 만족 표현과 재구매 의사가 있어 긍정 분류가 일치함.",
+      "external_evidence": "",
+      "original_text": "향이 너무 좋고 발림성도 최고예요. 또 살게요.",
+      "original_rating": 5,
+      "review_date": "2026-05-22",
+      "verification": {
+        "rule_based": {
+          "passed": true,
+          "checks": {
+            "summary_length_ok": true,
+            "confidence_in_range": true,
+            "category_valid": true,
+            "urgency_valid": true,
+            "email_format_ok": true,
+            "no_positive_high_urgency": true,
+            "defect_urgency_ok": true,
+            "department_matches": true,
+            "no_hallucination": true
+          },
+          "failed_rules": []
+        },
+        "judge_evaluation": {
+          "score": 10,
+          "passed": true,
+          "reasoning": "카테고리(긍정)는 향과 발림성에 대한 만족과 “또 살게요”라는 재구매 의사가 있어 원문과 정확히 일치합니다. 요약도 “향 좋고 발림성 만족”으로 핵심을 잘 포착했으며, 원문에 없는 요소를 추가하지 않았습니다. 긴급도(urgency)는 칭찬/재구매 의사 표현으로 심각한 문제 제기가 없으므로 low가 적절합니다. confidence 0.99 또한 감정 표현이 매우 명확해 높은 수준의 확신과 잘 부합합니다."
+        },
+        "final_status": "verified"
+      }
+    },
+    {
+      "review_id": "R009",
+      "category": "제품결함",
+      "summary": "발열·타는 냄새",
+      "department": "품질관리팀",
+      "department_email": "a01039261344@gmail.com",
+      "urgency": "high",
+      "confidence": 0.99,
+      "reasoning": "사용 중 갑자기 뜨거워지고 타는 냄새가 났다는 내용은 안전 이슈를 동반한 제품 이상으로, 배송이나 단순불만보다 제품결함으로 분류하는 것이 적절함.",
+      "self_check_notes": "원문에 발열, 타는 냄새, 위험 우려가 명시되어 있어 제품결함 분류가 일치함.",
+      "external_evidence": "",
+      "original_text": "사용 중에 갑자기 뜨거워지면서 타는 냄새가 났어요. 위험한 거 아닌가요?",
+      "original_rating": 1,
+      "review_date": "2026-05-21",
+      "verification": {
+        "rule_based": {
+          "passed": true,
+          "checks": {
+            "summary_length_ok": true,
+            "confidence_in_range": true,
+            "category_valid": true,
+            "urgency_valid": true,
+            "email_format_ok": true,
+            "no_positive_high_urgency": true,
+            "defect_urgency_ok": true,
+            "department_matches": true,
+            "no_hallucination": true
+          },
+          "failed_rules": []
+        },
+        "judge_evaluation": {
+          "score": 9,
+          "passed": true,
+          "reasoning": "category(제품결함)는 사용 중 갑자기 발열되고 타는 냄새가 난다는 내용으로 안전 이슈가 동반된 이상 현상이라 적절합니다. summary도 ‘발열·타는 냄새’로 핵심을 정확히 포착했습니다. urgency는 ‘위험한 거 아닌가요?’라는 질문과 즉각적 안전 우려가 있어 high가 타당합니다. confidence 0.99 또한 텍스트가 결함 가능성을 강하게 시사해 전반적으로 부합합니다. 다만 사용자가 실제 결함을 단정하진 않으나, 문맥상 충분히 결함/안전 이슈로 분류 가능한 수준이라 미세 조정 여지는 적습니다."
+        },
+        "final_status": "verified"
+      }
+    },
+    {
+      "review_id": "R010",
+      "category": "미분류",
+      "summary": "오배송",
+      "department": "고객지원팀",
+      "department_email": "a01039261344@gmail.com",
+      "urgency": "low",
+      "confidence": 0.98,
+      "reasoning": "주문한 상품과 다른 상품이 배송되었다는 내용으로, 배송문제 중 오배송에 해당한다.",
+      "self_check_notes": "원문에 배송된 상품이 다름이 명시되어 배송문제로 재확인함.",
+      "external_evidence": "",
+      "original_text": "다른 상품이 배송됐어요. 제가 주문한 건 이게 아닌데요.",
+      "original_rating": 1,
+      "review_date": "2026-05-21",
+      "needs_human_review": true,
+      "downgrade_reason": "rule_based_failed",
+      "verification": {
+        "rule_based": {
+          "passed": false,
+          "checks": {
+            "summary_length_ok": true,
+            "confidence_in_range": true,
+            "category_valid": true,
+            "urgency_valid": true,
+            "email_format_ok": true,
+            "no_positive_high_urgency": true,
+            "defect_urgency_ok": true,
+            "department_matches": true,
+            "no_hallucination": false
+          },
+          "failed_rules": [
+            "no_hallucination"
+          ]
+        },
+        "judge_evaluation": null,
+        "final_status": "rule_based_failed"
+      }
+    },
+    {
+      "review_id": "R011",
+      "category": "긍정",
+      "summary": "가격대비 무난함",
+      "department": "마케팅팀",
+      "department_email": "a01039261344@gmail.com",
+      "urgency": "low",
+      "confidence": 0.93,
+      "reasoning": "리뷰는 '가격 대비 괜찮다', '무난하다'로 전반적 만족을 표현하며 결함, 배송문제, 강한 불만이 없다. 별점 4점도 내용과 일치해 긍정으로 분류했다.",
+      "self_check_notes": "원문 재검토 결과, 결함·배송 이슈 없이 만족 표현만 있어 긍정 분류가 적절함.",
+      "external_evidence": "",
+      "original_text": "가격 대비 괜찮은 것 같아요. 무난합니다.",
+      "original_rating": 4,
+      "review_date": "2026-05-20",
+      "verification": {
+        "rule_based": {
+          "passed": true,
+          "checks": {
+            "summary_length_ok": true,
+            "confidence_in_range": true,
+            "category_valid": true,
+            "urgency_valid": true,
+            "email_format_ok": true,
+            "no_positive_high_urgency": true,
+            "defect_urgency_ok": true,
+            "department_matches": true,
+            "no_hallucination": true
+          },
+          "failed_rules": []
+        },
+        "judge_evaluation": {
+          "score": 10,
+          "passed": true,
+          "reasoning": "category(긍정)는 “가격 대비 괜찮다, 무난하다”라는 명확한 만족 표현과 별점 4점(보통보다 낮지만 부정으로 해석되진 않음) 모두와 일치합니다. summary도 원문 핵심인 “가격대비 무난함”을 정확히 포착했습니다. urgency는 불만/피해/긴급 상황이 전혀 없어 low가 적절합니다. confidence 0.93도 문장이 짧고 방향이 명확하다는 점에서 타당합니다."
+        },
+        "final_status": "verified"
+      }
+    },
+    {
+      "review_id": "R012",
+      "category": "제품결함",
+      "summary": "액정 파손 반복",
+      "department": "품질관리팀",
+      "department_email": "a01039261344@gmail.com",
+      "urgency": "high",
+      "confidence": 0.99,
+      "reasoning": "리뷰에서 액정에 금이 갔다고 명시되어 있으며, 반복 발생(두 번째)도 언급되어 제품결함으로 판단했다.",
+      "self_check_notes": "원문의 핵심은 액정 파손 반복으로, 배송이나 단순불만보다 제품결함 분류가 일치함을 재확인했다.",
+      "external_evidence": "",
+      "original_text": "액정에 또 금이 가 있어요. 이번이 두 번째예요.",
+      "original_rating": 1,
+      "review_date": "2026-05-20",
+      "verification": {
+        "rule_based": {
+          "passed": true,
+          "checks": {
+            "summary_length_ok": true,
+            "confidence_in_range": true,
+            "category_valid": true,
+            "urgency_valid": true,
+            "email_format_ok": true,
+            "no_positive_high_urgency": true,
+            "defect_urgency_ok": true,
+            "department_matches": true,
+            "no_hallucination": true
+          },
+          "failed_rules": []
+        },
+        "judge_evaluation": {
+          "score": 10,
+          "passed": true,
+          "reasoning": "카테고리(product결함)는 액정에 금이 간 현상을 반복이라고 했으므로 텍스트와 정확히 일치합니다. 요약도 ‘액정 파손 반복’으로 핵심(두 번째로 금이 감)을 잘 포착했어요. 긴급도는 추가 사용 중 악화/불편 가능성을 고려하면 high로 적절합니다. confidence 0.99도 문장이 매우 명확해 과도하지 않으며 전반적으로 사람 판단과 동일할 가능성이 큽니다."
+        },
+        "final_status": "verified"
+      }
+    },
+    {
+      "review_id": "R013",
+      "category": "긍정",
+      "summary": "빠른 배송 만족",
+      "department": "마케팅팀",
+      "department_email": "a01039261344@gmail.com",
+      "urgency": "low",
+      "confidence": 0.98,
+      "reasoning": "리뷰는 배송이 매우 빨랐다는 만족 표현만 있으며 제품 결함, 배송 문제, 단순 불만은 보이지 않아 긍정으로 분류함.",
+      "self_check_notes": "원문에 배송 칭찬만 있어 긍정 분류가 일치함.",
+      "external_evidence": "",
+      "original_text": "배송이 엄청 빨라서 좋았어요. 다음 날 바로 왔네요.",
+      "original_rating": 5,
+      "review_date": "2026-05-19",
+      "verification": {
+        "rule_based": {
+          "passed": true,
+          "checks": {
+            "summary_length_ok": true,
+            "confidence_in_range": true,
+            "category_valid": true,
+            "urgency_valid": true,
+            "email_format_ok": true,
+            "no_positive_high_urgency": true,
+            "defect_urgency_ok": true,
+            "department_matches": true,
+            "no_hallucination": true
+          },
+          "failed_rules": []
+        },
+        "judge_evaluation": {
+          "score": 10,
+          "passed": true,
+          "reasoning": "category(긍정)는 “배송이 엄청 빨라서 좋았어요”, “다음 날 바로 왔네요”로 명확히 만족을 표현하므로 정확합니다. summary(빠른 배송 만족) 역시 핵심 내용을 그대로 간결하게 포착했습니다. urgency는 배송 지연/문제에 대한 불만이 아니라 단순 칭찬이어서 low가 적절합니다. confidence 0.98은 텍스트가 긍정/저위험을 명확히 시사하므로 실제 명확성과도 잘 부합합니다."
+        },
+        "final_status": "verified"
+      }
+    },
+    {
+      "review_id": "R014",
+      "category": "제품결함",
+      "summary": "버튼 무반응 불량",
+      "department": "품질관리팀",
+      "department_email": "a01039261344@gmail.com",
+      "urgency": "high",
+      "confidence": 0.98,
+      "reasoning": "버튼을 눌러도 반응이 없고 불량이라고 직접 언급해 제품 자체 작동 불량으로 판단됨.",
+      "self_check_notes": "원문에 버튼 무반응과 불량이 명시되어 제품결함 분류가 일치함.",
+      "external_evidence": "",
+      "original_text": "버튼을 눌러도 반응이 없어요. 불량인 것 같습니다.",
+      "original_rating": 1,
+      "review_date": "2026-05-19",
+      "verification": {
+        "rule_based": {
+          "passed": true,
+          "checks": {
+            "summary_length_ok": true,
+            "confidence_in_range": true,
+            "category_valid": true,
+            "urgency_valid": true,
+            "email_format_ok": true,
+            "no_positive_high_urgency": true,
+            "defect_urgency_ok": true,
+            "department_matches": true,
+            "no_hallucination": true
+          },
+          "failed_rules": []
+        },
+        "judge_evaluation": {
+          "score": 10,
+          "passed": true,
+          "reasoning": "category(제품결함)는 버튼 무반응과 불량 의심 발언과 정확히 일치합니다. summary(버튼 무반응 불량)도 핵심을 간결하게 반영하며 원문과 잘 부합합니다. urgency(high)는 “불량인 것 같습니다” 및 즉각적 사용 불가 가능성을 고려할 때 적절합니다. confidence 0.98 또한 텍스트가 단일 증상(무반응)과 불량 언급으로 명확해 실제 명확성과 잘 맞습니다."
+        },
+        "final_status": "verified"
+      }
+    },
+    {
+      "review_id": "R015",
+      "category": "긍정",
+      "summary": "디자인 만족",
+      "department": "마케팅팀",
+      "department_email": "a01039261344@gmail.com",
+      "urgency": "low",
+      "confidence": 0.99,
+      "reasoning": "리뷰 텍스트에 디자인이 예쁘고 만족한다고 명시되어 있어 긍정 리뷰로 판단했다. 제품결함, 배송문제, 불만 표현은 없다.",
+      "self_check_notes": "원문 재검토 결과 부정·문제 제기 없이 만족 표현만 있어 긍정 분류가 일치한다.",
+      "external_evidence": "",
+      "original_text": "디자인이 예뻐요. 만족합니다.",
+      "original_rating": 5,
+      "review_date": "2026-05-18",
+      "verification": {
+        "rule_based": {
+          "passed": true,
+          "checks": {
+            "summary_length_ok": true,
+            "confidence_in_range": true,
+            "category_valid": true,
+            "urgency_valid": true,
+            "email_format_ok": true,
+            "no_positive_high_urgency": true,
+            "defect_urgency_ok": true,
+            "department_matches": true,
+            "no_hallucination": true
+          },
+          "failed_rules": []
+        },
+        "judge_evaluation": {
+          "score": 10,
+          "passed": true,
+          "reasoning": "카테고리(긍정)는 “디자인이 예뻐요. 만족합니다”와 정확히 일치합니다. 요약도 “디자인 만족”으로 핵심을 잘 반영했고, 원문이 불만이나 문제 제기가 전혀 없으므로 urgency를 low로 둔 것도 적절합니다. 또한 감정이 명확한 긍정 표현이라 confidence 0.99도 과하지 않으며 전반적으로 일관됩니다."
+        },
+        "final_status": "verified"
+      }
+    },
+    {
+      "review_id": "R016",
+      "category": "제품결함",
+      "summary": "냄새 발생",
+      "department": "품질관리팀",
+      "department_email": "a01039261344@gmail.com",
+      "urgency": "medium",
+      "confidence": 0.91,
+      "reasoning": "리뷰의 핵심은 제품에서 냄새가 난다는 품질 문제이며, 환불 문의도 있으나 원인은 제품 상태로 보인다. 배송 문제나 단순 불만보다 제품결함으로 분류하는 것이 적절하다.",
+      "self_check_notes": "원문에 냄새 문제와 환불 문의가 있으므로 제품결함 분류가 일치함을 재확인함.",
+      "external_evidence": "",
+      "original_text": "냄새가 좀 나는데 환불은 안 해주시나요? 그냥 쓸게요.",
+      "original_rating": 3,
+      "review_date": "2026-05-18",
+      "verification": {
+        "rule_based": {
+          "passed": true,
+          "checks": {
+            "summary_length_ok": true,
+            "confidence_in_range": true,
+            "category_valid": true,
+            "urgency_valid": true,
+            "email_format_ok": true,
+            "no_positive_high_urgency": true,
+            "defect_urgency_ok": true,
+            "department_matches": true,
+            "no_hallucination": true
+          },
+          "failed_rules": []
+        },
+        "judge_evaluation": {
+          "score": 8,
+          "passed": true,
+          "reasoning": "category는 ‘냄새가 난다’는 내용이 품질/결함 의심에 해당해 전반적으로 타당합니다. 다만 원문에 실제로 ‘환불’ 요구가 명시되어 있어 단순 제품결함으로만 단정하기엔 약간의 여지가 있습니다(예: 서비스/환불정책 불만 가능성). summary는 ‘냄새 발생’으로 핵심을 잘 포착했습니다. urgency는 심각한 안전 위협 언급은 없고 환불 문의 수준이라 medium이 무난합니다. confidence 0.91도 대체로 타당하나, 환불 정책 불만 가능성을 완전히 배제하진 못해 약간 내려도 될 듯합니다."
+        },
+        "final_status": "verified"
+      }
+    },
+    {
+      "review_id": "R017",
+      "category": "배송문제",
+      "summary": "비에 젖은 택배상자",
+      "department": "물류팀",
+      "department_email": "a01039261344@gmail.com",
+      "urgency": "medium",
+      "confidence": 0.98,
+      "reasoning": "리뷰에서 택배 상자가 비에 젖고 훼손된 상태라고 명시되어 있어 배송 과정 문제로 분류함. 제품 자체 결함 언급은 없음.",
+      "self_check_notes": "원문에 배송 중 포장 훼손만 있어 배송문제로 재확인함.",
+      "external_evidence": "",
+      "original_text": "택배 상자가 비에 젖어서 너덜너덜했어요.",
+      "original_rating": 2,
+      "review_date": "2026-05-17",
+      "verification": {
+        "rule_based": {
+          "passed": true,
+          "checks": {
+            "summary_length_ok": true,
+            "confidence_in_range": true,
+            "category_valid": true,
+            "urgency_valid": true,
+            "email_format_ok": true,
+            "no_positive_high_urgency": true,
+            "defect_urgency_ok": true,
+            "department_matches": true,
+            "no_hallucination": true
+          },
+          "failed_rules": []
+        },
+        "judge_evaluation": {
+          "score": 9,
+          "passed": true,
+          "reasoning": "분류 정확성(40%): 택배 상자가 비에 젖어 훼손된 내용으로 ‘배송문제’가 타당합니다. 요약 적절성(30%): 핵심인 ‘비에 젖어서 너덜너덜’이 ‘비에 젖은 택배상자’로 잘 반영되었습니다. 긴급성(20%): 물품 손상은 다소 불만이지만 생명/안전 위협 수준은 아니어서 medium이 적절합니다. 일관성(10%): confidence 0.98도 문장 해석이 매우 명확하므로 전반적으로 부합합니다. 다만 urgency를 조금 더 낮출 여지도 있으나, 전체적으로 사람이 보기에도 동의할 수준입니다."
+        },
+        "final_status": "verified"
+      }
+    },
+    {
+      "review_id": "R018",
+      "category": "긍정",
+      "summary": "기능·디자인 만족",
+      "department": "마케팅팀",
+      "department_email": "a01039261344@gmail.com",
+      "urgency": "low",
+      "confidence": 0.99,
+      "reasoning": "리뷰 텍스트에 기능과 디자인이 좋고 완벽하다고 명시되어 있어 전반적 만족을 표현하는 긍정 리뷰로 판단했다.",
+      "self_check_notes": "원문에 불만·결함·배송 문제 없이 만족 표현만 있어 긍정 분류가 일치함.",
+      "external_evidence": "",
+      "original_text": "기능도 좋고 디자인도 좋고 다 좋아요. 완벽!",
+      "original_rating": 5,
+      "review_date": "2026-05-17",
+      "verification": {
+        "rule_based": {
+          "passed": true,
+          "checks": {
+            "summary_length_ok": true,
+            "confidence_in_range": true,
+            "category_valid": true,
+            "urgency_valid": true,
+            "email_format_ok": true,
+            "no_positive_high_urgency": true,
+            "defect_urgency_ok": true,
+            "department_matches": true,
+            "no_hallucination": true
+          },
+          "failed_rules": []
+        },
+        "judge_evaluation": {
+          "score": 10,
+          "passed": true,
+          "reasoning": "1) 분류 정확성: 리뷰는 “기능도 좋고 디자인도 좋고 다 좋아요. 완벽!”으로 전반적 만족을 명확히 표현하므로 category ‘긍정’은 정확합니다. 2) 요약 적절성: “기능·디자인 만족”은 원문 핵심(기능과 디자인이 좋음, 완벽)을 잘 반영합니다. 3) urgency 적절성: 단순 칭찬으로 문제 제기나 긴급 상황이 없으므로 urgency ‘low’가 타당합니다. 4) 일관성: 표현이 매우 명확한 긍정(완벽)이라 confidence 0.99는 과하지 않으며 일관됩니다."
+        },
+        "final_status": "verified"
+      }
+    },
+    {
+      "review_id": "R019",
+      "category": "제품결함",
+      "summary": "화면 줄·터치불량",
+      "department": "품질관리팀",
+      "department_email": "a01039261344@gmail.com",
+      "urgency": "high",
+      "confidence": 0.99,
+      "reasoning": "리뷰에 화면 줄 발생과 터치 불량이 직접 언급되어 있어 명백한 제품 결함으로 판단했다. 배송이나 단순 불만보다 결함 이슈가 우선한다.",
+      "self_check_notes": "원문의 핵심은 화면 이상과 터치 불량으로, 제품결함 분류가 일치함을 재확인했다.",
+      "external_evidence": "",
+      "original_text": "화면에 줄이 가고 터치가 안 먹어요. 명백한 결함입니다.",
+      "original_rating": 1,
+      "review_date": "2026-05-16",
+      "verification": {
+        "rule_based": {
+          "passed": true,
+          "checks": {
+            "summary_length_ok": true,
+            "confidence_in_range": true,
+            "category_valid": true,
+            "urgency_valid": true,
+            "email_format_ok": true,
+            "no_positive_high_urgency": true,
+            "defect_urgency_ok": true,
+            "department_matches": true,
+            "no_hallucination": true
+          },
+          "failed_rules": []
+        },
+        "judge_evaluation": {
+          "score": 10,
+          "passed": true,
+          "reasoning": "category(제품결함)는 화면 줄 현상과 터치 불량이 직접적으로 언급되어 있어 원문과 정확히 일치합니다. summary도 ‘화면 줄·터치불량’으로 핵심을 간결하고 충실하게 포착했습니다. urgency는 사용 불가 수준의 기능 결함으로 보이므로 high가 적절합니다. confidence 0.99 역시 해당 증상이 명확해 신뢰도 수준과 잘 부합합니다. 전반적으로 사람이 봐도 동의할 만한 분류입니다."
+        },
+        "final_status": "verified"
+      }
+    },
+    {
+      "review_id": "R020",
+      "category": "단순불만",
+      "summary": "색감 불만 및 환불 고민",
+      "department": "고객지원팀",
+      "department_email": "a01039261344@gmail.com",
+      "urgency": "low",
+      "confidence": 0.96,
+      "reasoning": "리뷰는 색감이 마음에 들지 않는다는 주관적 불만과 환불 고민만을 담고 있어 제품 결함이나 배송 문제로 볼 근거가 없다. 별점 2점이지만 텍스트 내용을 우선해 단순불만으로 분류했다.",
+      "self_check_notes": "원문 재검토 결과, 결함·배송 언급 없고 색감 불만만 있어 단순불만 분류가 일치함.",
+      "external_evidence": "",
+      "original_text": "색감이 마음에 안 들어요. 환불 고민 중입니다.",
+      "original_rating": 2,
+      "review_date": "2026-05-16",
+      "verification": {
+        "rule_based": {
+          "passed": true,
+          "checks": {
+            "summary_length_ok": true,
+            "confidence_in_range": true,
+            "category_valid": true,
+            "urgency_valid": true,
+            "email_format_ok": true,
+            "no_positive_high_urgency": true,
+            "defect_urgency_ok": true,
+            "department_matches": true,
+            "no_hallucination": true
+          },
+          "failed_rules": []
+        },
+        "judge_evaluation": {
+          "score": 9,
+          "passed": true,
+          "reasoning": "1) 분류 정확성: “색감이 마음에 안 들어요”에 대한 불만과 “환불 고민”이 핵심이며, 결함/배송 문제 언급은 없어 ‘단순불만’ 범주가 타당합니다. 2) 요약 적절성: summary가 색감 불만과 환불 고민을 그대로 포착해 정확합니다. 3) urgency 적절성: 즉시 신고/안전 위협 등 긴급 요소는 없으므로 low가 적절합니다. 4) 일관성: 짧은 텍스트에서 명확히 불만과 환불 고민만 보이므로 confidence 0.96도 과하지 않습니다. 전반적으로 사람이 봐도 동의할 수준입니다."
+        },
+        "final_status": "verified"
+      }
+    }
+  ],
+  "summary_analysis": {
+    "category_distribution": {
+      "제품결함": 7,
+      "단순불만": 3,
+      "긍정": 6,
+      "배송문제": 3,
+      "미분류": 1
+    },
+    "defect_types": {
+      "액정 파손": 1,
+      "전원버튼 작동불량": 1,
+      "발열·타는 냄새": 1,
+      "액정 파손 반복": 1,
+      "버튼 무반응 불량": 1,
+      "냄새 발생": 1,
+      "화면 줄·터치불량": 1
+    },
+    "urgency_distribution": {
+      "high": 6,
+      "low": 10,
+      "medium": 4
+    },
+    "average_confidence": 0.973,
+    "verification_pass_rate": 0.95,
+    "key_findings": [
+      "전체 결함률 35%로 평균(10%) 대비 높음"
+    ],
+    "trending_keywords": [
+      "만족",
+      "액정",
+      "파손",
+      "불만",
+      "냄새"
+    ]
+  },
+  "execution_time_ms": 120019
+}

@@ -1,0 +1,100 @@
+<Activity mc:Ignorable="sap sap2010 sads" x:Class="Scrape_Reviews"
+ xmlns="http://schemas.microsoft.com/netfx/2009/xaml/activities"
+ xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+ xmlns:sap="http://schemas.microsoft.com/netfx/2009/xaml/activities/presentation"
+ xmlns:sap2010="http://schemas.microsoft.com/netfx/2010/xaml/activities/presentation"
+ xmlns:sads="http://schemas.microsoft.com/netfx/2010/xaml/activities/debugger"
+ xmlns:scg="clr-namespace:System.Collections.Generic;assembly=mscorlib"
+ xmlns:sd="clr-namespace:System.Data;assembly=System.Data"
+ xmlns:ui="http://schemas.uipath.com/workflow/activities"
+ xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+  <x:Members>
+    <x:Property Name="in_GoodsUrl" Type="InArgument(x:String)" />
+    <x:Property Name="out_dtReviews" Type="OutArgument(sd:DataTable)" />
+  </x:Members>
+  <sap2010:WorkflowViewState.IdRef>Scrape_Reviews_1</sap2010:WorkflowViewState.IdRef>
+  <TextExpression.NamespacesForImplementation>
+    <scg:List x:TypeArguments="x:String" Capacity="5">
+      <x:String>System</x:String>
+      <x:String>System.Data</x:String>
+      <x:String>System.Collections.Generic</x:String>
+      <x:String>UiPath.Core.Activities</x:String>
+    </scg:List>
+  </TextExpression.NamespacesForImplementation>
+  <TextExpression.ReferencesForImplementation>
+    <scg:List x:TypeArguments="AssemblyReference" Capacity="3">
+      <AssemblyReference>System.Data</AssemblyReference>
+      <AssemblyReference>UiPath.System.Activities</AssemblyReference>
+      <AssemblyReference>UiPath.UIAutomation.Activities</AssemblyReference>
+    </scg:List>
+  </TextExpression.ReferencesForImplementation>
+
+  <Sequence DisplayName="Scrape_Reviews - 올리브영 라이브 수집 (PRD §5.4)" sap2010:Annotation.AnnotationText="라이브 스크래핑만(fallback 없음). 올리브영 메인 HTTP 403 → 브라우저 자동화 필수. 모든 셀렉터는 PLACEHOLDER, Windows Studio서 Indicate로 재캡처할 것. 차단 위험은 Retry 3회(§9.7)로만 방어.">
+    <Sequence.Variables>
+      <Variable x:TypeArguments="x:Int32" Name="intRetry" Default="0" />
+      <Variable x:TypeArguments="x:Boolean" Name="boolOk" Default="False" />
+    </Sequence.Variables>
+
+    <!-- 결과 DataTable 12입력컬럼이 아닌 수집 4컬럼 스키마: review_id,text,rating,review_date -->
+    <ui:BuildDataTable DisplayName="Build dtReviews (review_id,text,rating,review_date)" TableName="dtReviews" DataTable="[out_dtReviews]"
+      sap2010:Annotation.AnnotationText="컬럼: review_id(String), text(String), rating(Int32), review_date(String). 빌더 마법사로 컬럼 재확인.">
+      <ui:BuildDataTable.DataTableInput>&lt;?xml version="1.0" encoding="utf-16"?&gt;&lt;DataTable&gt;PLACEHOLDER - Studio BuildDataTable 마법사로 4컬럼 정의&lt;/DataTable&gt;</ui:BuildDataTable.DataTableInput>
+    </ui:BuildDataTable>
+
+    <!-- §9.7 Retry 3회: SelectorNotFound / 로딩>5s / "차단되었습니다" 감지 -->
+    <ui:RetryScope DisplayName="Retry 3회 (§9.7 차단 대응)" NumberOfRetries="3" RetryInterval="[New TimeSpan(0,0,3)]">
+      <ui:RetryScope.Body>
+        <Sequence DisplayName="수집 Body">
+          <!-- 브라우저 오픈 (헤드리스 해제 = 사람처럼) -->
+          <ui:NApplicationCard DisplayName="Open Browser - in_GoodsUrl"
+            sap2010:Annotation.AnnotationText="URL = in_GoodsUrl. 브라우저: Chrome. 페이지 간 대기 1.5→3s. User-Agent 변경 옵션 고려.">
+            <Sequence DisplayName="브라우저 내 동작">
+              <!-- 리뷰 탭 클릭: XPath //*[@id='reviewInfo']/a -->
+              <ui:NClick DisplayName="Click 리뷰 탭 (PLACEHOLDER selector)"
+                sap2010:Annotation.AnnotationText="참고 셀렉터 XPath: //*[@id='reviewInfo']/a — Studio Indicate로 재캡처." />
+
+              <ui:Delay DisplayName="Delay 3s (로딩 대기)" Duration="[New TimeSpan(0,0,3)]" />
+
+              <!-- 구조화 추출: 리뷰 텍스트/별점/작성일 20건 -->
+              <ui:ExtractData DisplayName="Extract Structured Data - 리뷰 20건 (PLACEHOLDER)"
+                DataTable="[out_dtReviews]"
+                ExtractMetadata="&lt;extract&gt;&lt;column name='text' exact='1' /&gt;&lt;column name='rating' attr='style' /&gt;&lt;column name='review_date' exact='1' /&gt;PLACEHOLDER - #gdasList&gt;li / .review_cont .txt / .review_point .point / .review_info .date&lt;/extract&gt;"
+                sap2010:Annotation.AnnotationText="컨테이너 #gdasContentsArea #gdasList, 개별 #gdasList&gt;li. 별점은 .review_point .point 또는 .grade_img width%. 최대 20건. 페이지네이션 #gdasContentsArea .pageing a. Studio Data Scraping 마법사로 ExtractMetadata 재생성 필수." />
+            </Sequence>
+          </ui:NApplicationCard>
+
+          <!-- 수집 검증: 건수/빈텍스트/중복 → 실패 시 throw로 Retry 유발 -->
+          <If Condition="[out_dtReviews Is Nothing OrElse out_dtReviews.Rows.Count = 0]" DisplayName="If 수집 0건 → 재시도">
+            <If.Then>
+              <Throw DisplayName="Throw 수집 실패">
+                <Throw.Exception>
+                  <InArgument x:TypeArguments="s:Exception" xmlns:s="clr-namespace:System;assembly=mscorlib">[New Exception("수집 0건 - 차단 의심 또는 셀렉터 불일치")]</InArgument>
+                </Throw.Exception>
+              </Throw>
+            </If.Then>
+            <If.Else>
+              <Assign DisplayName="boolOk = True">
+                <Assign.To>
+                  <OutArgument x:TypeArguments="x:Boolean">[boolOk]</OutArgument>
+                </Assign.To>
+                <Assign.Value>
+                  <InArgument x:TypeArguments="x:Boolean">True</InArgument>
+                </Assign.Value>
+              </Assign>
+            </If.Else>
+          </If>
+        </Sequence>
+      </ui:RetryScope.Body>
+      <ui:RetryScope.Condition>
+        <ActivityAction>
+          <ActivityAction.Argument>
+            <DelegateInArgument x:TypeArguments="x:Object" Name="ConditionArg" />
+          </ActivityAction.Argument>
+          <If Condition="[boolOk]" DisplayName="조건: 성공 시 재시도 중단" />
+        </ActivityAction>
+      </ui:RetryScope.Condition>
+    </ui:RetryScope>
+
+    <ui:LogMessage DisplayName="Log 수집 결과" Level="Info" Message="[&quot;수집 완료: &quot; &amp; out_dtReviews.Rows.Count.ToString() &amp; &quot;건&quot;]" />
+  </Sequence>
+</Activity>

@@ -1,0 +1,25 @@
+{
+  "batch_id": "20260527_001",
+  "reviews": [
+    {"review_id": "R001", "text": "배송도 빠른데 화면 우측 하단에 액정이 깨져서 왔어요. 교환해주세요.", "rating": 2, "review_date": "2026-05-25"},
+    {"review_id": "R002", "text": "별점은 5점 주는데 사실 전원 버튼이 잘 안 눌려요. 작동이 가끔 멈춰요.", "rating": 5, "review_date": "2026-05-25"},
+    {"review_id": "R003", "text": "색상이 사진이랑 좀 달라요. 제 취향은 아니네요.", "rating": 3, "review_date": "2026-05-24"},
+    {"review_id": "R004", "text": "정말 만족스러워요! 재구매 의사 있습니다. 강추합니다.", "rating": 5, "review_date": "2026-05-24"},
+    {"review_id": "R005", "text": "주문한 지 일주일이 지났는데 아직도 배송이 안 왔어요.", "rating": 1, "review_date": "2026-05-23"},
+    {"review_id": "R006", "text": "포장 박스가 다 찌그러져서 도착했어요. 안에 내용물도 눌렸네요.", "rating": 2, "review_date": "2026-05-23"},
+    {"review_id": "R007", "text": "사이즈가 생각보다 작아요. 그래도 쓸만은 합니다.", "rating": 3, "review_date": "2026-05-22"},
+    {"review_id": "R008", "text": "향이 너무 좋고 발림성도 최고예요. 또 살게요.", "rating": 5, "review_date": "2026-05-22"},
+    {"review_id": "R009", "text": "사용 중에 갑자기 뜨거워지면서 타는 냄새가 났어요. 위험한 거 아닌가요?", "rating": 1, "review_date": "2026-05-21"},
+    {"review_id": "R010", "text": "다른 상품이 배송됐어요. 제가 주문한 건 이게 아닌데요.", "rating": 1, "review_date": "2026-05-21"},
+    {"review_id": "R011", "text": "가격 대비 괜찮은 것 같아요. 무난합니다.", "rating": 4, "review_date": "2026-05-20"},
+    {"review_id": "R012", "text": "액정에 또 금이 가 있어요. 이번이 두 번째예요.", "rating": 1, "review_date": "2026-05-20"},
+    {"review_id": "R013", "text": "배송이 엄청 빨라서 좋았어요. 다음 날 바로 왔네요.", "rating": 5, "review_date": "2026-05-19"},
+    {"review_id": "R014", "text": "버튼을 눌러도 반응이 없어요. 불량인 것 같습니다.", "rating": 1, "review_date": "2026-05-19"},
+    {"review_id": "R015", "text": "디자인이 예뻐요. 만족합니다.", "rating": 5, "review_date": "2026-05-18"},
+    {"review_id": "R016", "text": "냄새가 좀 나는데 환불은 안 해주시나요? 그냥 쓸게요.", "rating": 3, "review_date": "2026-05-18"},
+    {"review_id": "R017", "text": "택배 상자가 비에 젖어서 너덜너덜했어요.", "rating": 2, "review_date": "2026-05-17"},
+    {"review_id": "R018", "text": "기능도 좋고 디자인도 좋고 다 좋아요. 완벽!", "rating": 5, "review_date": "2026-05-17"},
+    {"review_id": "R019", "text": "화면에 줄이 가고 터치가 안 먹어요. 명백한 결함입니다.", "rating": 1, "review_date": "2026-05-16"},
+    {"review_id": "R020", "text": "색감이 마음에 안 들어요. 환불 고민 중입니다.", "rating": 2, "review_date": "2026-05-16"}
+  ]
+}

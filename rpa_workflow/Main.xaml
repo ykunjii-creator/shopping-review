@@ -1,0 +1,156 @@
+<Activity mc:Ignorable="sap sap2010 sads" x:Class="Main"
+ xmlns="http://schemas.microsoft.com/netfx/2009/xaml/activities"
+ xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+ xmlns:sap="http://schemas.microsoft.com/netfx/2009/xaml/activities/presentation"
+ xmlns:sap2010="http://schemas.microsoft.com/netfx/2010/xaml/activities/presentation"
+ xmlns:sads="http://schemas.microsoft.com/netfx/2010/xaml/activities/debugger"
+ xmlns:scg="clr-namespace:System.Collections.Generic;assembly=mscorlib"
+ xmlns:sd="clr-namespace:System.Data;assembly=System.Data"
+ xmlns:njl="clr-namespace:Newtonsoft.Json.Linq;assembly=Newtonsoft.Json"
+ xmlns:ui="http://schemas.uipath.com/workflow/activities"
+ xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+  <x:Members>
+    <x:Property Name="in_GoodsUrl" Type="InArgument(x:String)" />
+  </x:Members>
+  <sap2010:WorkflowViewState.IdRef>Main_1</sap2010:WorkflowViewState.IdRef>
+  <TextExpression.NamespacesForImplementation>
+    <scg:List x:TypeArguments="x:String" Capacity="8">
+      <x:String>System</x:String>
+      <x:String>System.Data</x:String>
+      <x:String>System.Collections.Generic</x:String>
+      <x:String>Newtonsoft.Json</x:String>
+      <x:String>Newtonsoft.Json.Linq</x:String>
+      <x:String>UiPath.Core</x:String>
+      <x:String>UiPath.Core.Activities</x:String>
+    </scg:List>
+  </TextExpression.NamespacesForImplementation>
+  <TextExpression.ReferencesForImplementation>
+    <scg:List x:TypeArguments="AssemblyReference" Capacity="6">
+      <AssemblyReference>System.Data</AssemblyReference>
+      <AssemblyReference>Newtonsoft.Json</AssemblyReference>
+      <AssemblyReference>UiPath.System.Activities</AssemblyReference>
+      <AssemblyReference>UiPath.WebAPI.Activities</AssemblyReference>
+    </scg:List>
+  </TextExpression.ReferencesForImplementation>
+
+  <Sequence DisplayName="Main - 오케스트레이션 (PRD §5.3)" sap2010:Annotation.AnnotationText="수집→HTTP→처리→분기메일→종합→RPA검증→로그. in_GoodsUrl 인자로 상품 URL 주입(403 차단 때문에 사용자가 Windows 브라우저서 URL 복붙).">
+    <Sequence.Variables>
+      <Variable x:TypeArguments="sd:DataTable" Name="dtReviews" />
+      <Variable x:TypeArguments="sd:DataTable" Name="dtResults" />
+      <Variable x:TypeArguments="x:String" Name="strBatchId" />
+      <Variable x:TypeArguments="x:String" Name="strRequestJson" />
+      <Variable x:TypeArguments="x:String" Name="strResponseJson" />
+      <Variable x:TypeArguments="njl:JObject" Name="jobjSummary" />
+      <Variable x:TypeArguments="x:Int32" Name="intDefectCount" />
+      <Variable x:TypeArguments="x:String" Name="strVerifyResult" />
+    </Sequence.Variables>
+
+    <!-- 1. 변수 초기화 -->
+    <Assign DisplayName="batch_id = yyyyMMdd_HHmmss">
+      <Assign.To>
+        <OutArgument x:TypeArguments="x:String">[strBatchId]</OutArgument>
+      </Assign.To>
+      <Assign.Value>
+        <InArgument x:TypeArguments="x:String">[Now.ToString("yyyyMMdd_HHmmss")]</InArgument>
+      </Assign.Value>
+    </Assign>
+
+    <!-- 2. 시작 로그 -->
+    <ui:LogMessage DisplayName="Log 프로세스 시작" Level="Info" Message="[&quot;=== 프로세스 시작 batch=&quot; &amp; strBatchId &amp; &quot; url=&quot; &amp; in_GoodsUrl]" />
+
+    <!-- 3. Invoke Scrape_Reviews → dtReviews -->
+    <ui:InvokeWorkflowFile DisplayName="Invoke Scrape_Reviews.xaml" WorkflowFileName="Scrape_Reviews.xaml">
+      <ui:InvokeWorkflowFile.Arguments>
+        <scg:Dictionary x:TypeArguments="x:String, Argument">
+          <InArgument x:TypeArguments="x:String" x:Key="in_GoodsUrl">[in_GoodsUrl]</InArgument>
+          <OutArgument x:TypeArguments="sd:DataTable" x:Key="out_dtReviews">[dtReviews]</OutArgument>
+        </scg:Dictionary>
+      </ui:InvokeWorkflowFile.Arguments>
+    </ui:InvokeWorkflowFile>
+
+    <!-- 4. 수집 0건이면 안전 종료 (PRD §6 신규리뷰 0건) -->
+    <If Condition="[dtReviews Is Nothing OrElse dtReviews.Rows.Count = 0]" DisplayName="If 수집 0건">
+      <If.Then>
+        <Sequence DisplayName="0건 → 안전 종료">
+          <ui:LogMessage Level="Warn" Message="&quot;수집 0건 - AI 호출 차단, 정상 종료&quot;" />
+          <TerminateWorkflow DisplayName="정상 종료" />
+        </Sequence>
+      </If.Then>
+    </If>
+
+    <!-- 5. JSON Request 빌드 (DataTable → {batch_id, reviews:[...]}) -->
+    <Assign DisplayName="Build Request JSON" sap2010:Annotation.AnnotationText="dtReviews 컬럼: review_id, text, rating, review_date. JArray로 변환 후 batch_id와 함께 직렬화. 실 Studio서는 For Each Row로 JObject 적재 권장.">
+      <Assign.To>
+        <OutArgument x:TypeArguments="x:String">[strRequestJson]</OutArgument>
+      </Assign.To>
+      <Assign.Value>
+        <InArgument x:TypeArguments="x:String">[New JObject(New JProperty("batch_id", strBatchId), New JProperty("reviews", JArray.FromObject(dtReviews))).ToString()]</InArgument>
+      </Assign.Value>
+    </Assign>
+
+    <!-- 6. HTTP POST localhost:8000/analyze-reviews -->
+    <ui:HttpClient DisplayName="POST /analyze-reviews"
+      EndPoint="http://localhost:8000/analyze-reviews"
+      Method="POST"
+      AcceptFormat="JSON"
+      ResponseContentFormat="ANY"
+      Body="[strRequestJson]"
+      Result="[strResponseJson]"
+      sap2010:Annotation.AnnotationText="Header Content-Type: application/json. TimeoutMS 충분히(분석 20건 수초). 실패 시 §6 API 에러 대응(상위 Try-Catch 권장).">
+      <ui:HttpClient.Headers>
+        <scg:Dictionary x:TypeArguments="x:String, x:String">
+          <x:String x:Key="Content-Type">application/json</x:String>
+        </scg:Dictionary>
+      </ui:HttpClient.Headers>
+    </ui:HttpClient>
+
+    <!-- 7. Invoke Process_Results → dtResults, intDefectCount, jobjSummary -->
+    <ui:InvokeWorkflowFile DisplayName="Invoke Process_Results.xaml" WorkflowFileName="Process_Results.xaml">
+      <ui:InvokeWorkflowFile.Arguments>
+        <scg:Dictionary x:TypeArguments="x:String, Argument">
+          <InArgument x:TypeArguments="x:String" x:Key="in_ResponseJson">[strResponseJson]</InArgument>
+          <OutArgument x:TypeArguments="sd:DataTable" x:Key="out_dtResults">[dtResults]</OutArgument>
+          <OutArgument x:TypeArguments="x:Int32" x:Key="out_DefectCount">[intDefectCount]</OutArgument>
+          <OutArgument x:TypeArguments="njl:JObject" x:Key="out_SummaryJson">[jobjSummary]</OutArgument>
+        </scg:Dictionary>
+      </ui:InvokeWorkflowFile.Arguments>
+    </ui:InvokeWorkflowFile>
+
+    <!-- 8. defect_count > 0 시 긴급 메일 -->
+    <If Condition="[intDefectCount &gt; 0]" DisplayName="If 결함 &gt; 0">
+      <If.Then>
+        <ui:InvokeWorkflowFile DisplayName="Invoke Send_Urgent_Mail.xaml" WorkflowFileName="Send_Urgent_Mail.xaml">
+          <ui:InvokeWorkflowFile.Arguments>
+            <scg:Dictionary x:TypeArguments="x:String, Argument">
+              <InArgument x:TypeArguments="sd:DataTable" x:Key="in_dtResults">[dtResults]</InArgument>
+              <InArgument x:TypeArguments="x:String" x:Key="in_BatchId">[strBatchId]</InArgument>
+            </scg:Dictionary>
+          </ui:InvokeWorkflowFile.Arguments>
+        </ui:InvokeWorkflowFile>
+      </If.Then>
+    </If>
+
+    <!-- 9. 종합 리포트 (후순위 워크플로) -->
+    <ui:InvokeWorkflowFile DisplayName="Invoke Generate_Summary_Report.xaml" WorkflowFileName="Generate_Summary_Report.xaml">
+      <ui:InvokeWorkflowFile.Arguments>
+        <scg:Dictionary x:TypeArguments="x:String, Argument">
+          <InArgument x:TypeArguments="x:String" x:Key="in_SummaryJson">[jobjSummary.ToString()]</InArgument>
+        </scg:Dictionary>
+      </ui:InvokeWorkflowFile.Arguments>
+    </ui:InvokeWorkflowFile>
+
+    <!-- 10. RPA 결과 검증 (후순위 워크플로) -->
+    <ui:InvokeWorkflowFile DisplayName="Invoke Verify_RPA_Results.xaml" WorkflowFileName="Verify_RPA_Results.xaml">
+      <ui:InvokeWorkflowFile.Arguments>
+        <scg:Dictionary x:TypeArguments="x:String, Argument">
+          <InArgument x:TypeArguments="x:Int32" x:Key="in_ExpectedReviewCount">[dtReviews.Rows.Count]</InArgument>
+          <InArgument x:TypeArguments="x:Boolean" x:Key="in_HadDefect">[intDefectCount &gt; 0]</InArgument>
+          <OutArgument x:TypeArguments="x:String" x:Key="out_VerificationResult">[strVerifyResult]</OutArgument>
+        </scg:Dictionary>
+      </ui:InvokeWorkflowFile.Arguments>
+    </ui:InvokeWorkflowFile>
+
+    <!-- 11. 종료 로그 -->
+    <ui:LogMessage DisplayName="Log 프로세스 종료" Level="Info" Message="[&quot;=== 종료 defect=&quot; &amp; intDefectCount.ToString() &amp; &quot; verify=&quot; &amp; strVerifyResult]" />
+  </Sequence>
+</Activity>

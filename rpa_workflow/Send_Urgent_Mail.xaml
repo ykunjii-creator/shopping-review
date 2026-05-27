@@ -1,0 +1,115 @@
+<Activity mc:Ignorable="sap sap2010 sads" x:Class="Send_Urgent_Mail"
+ xmlns="http://schemas.microsoft.com/netfx/2009/xaml/activities"
+ xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+ xmlns:sap="http://schemas.microsoft.com/netfx/2009/xaml/activities/presentation"
+ xmlns:sap2010="http://schemas.microsoft.com/netfx/2010/xaml/activities/presentation"
+ xmlns:sads="http://schemas.microsoft.com/netfx/2010/xaml/activities/debugger"
+ xmlns:scg="clr-namespace:System.Collections.Generic;assembly=mscorlib"
+ xmlns:sd="clr-namespace:System.Data;assembly=System.Data"
+ xmlns:s="clr-namespace:System;assembly=mscorlib"
+ xmlns:ui="http://schemas.uipath.com/workflow/activities"
+ xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+  <x:Members>
+    <x:Property Name="in_dtResults" Type="InArgument(sd:DataTable)" />
+    <x:Property Name="in_BatchId" Type="InArgument(x:String)" />
+  </x:Members>
+  <sap2010:WorkflowViewState.IdRef>Send_Urgent_Mail_1</sap2010:WorkflowViewState.IdRef>
+  <TextExpression.NamespacesForImplementation>
+    <scg:List x:TypeArguments="x:String" Capacity="5">
+      <x:String>System</x:String>
+      <x:String>System.Data</x:String>
+      <x:String>System.Linq</x:String>
+      <x:String>System.Collections.Generic</x:String>
+      <x:String>UiPath.Core.Activities</x:String>
+    </scg:List>
+  </TextExpression.NamespacesForImplementation>
+  <TextExpression.ReferencesForImplementation>
+    <scg:List x:TypeArguments="AssemblyReference" Capacity="4">
+      <AssemblyReference>System.Data</AssemblyReference>
+      <AssemblyReference>System.Core</AssemblyReference>
+      <AssemblyReference>UiPath.System.Activities</AssemblyReference>
+      <AssemblyReference>UiPath.Excel.Activities</AssemblyReference>
+      <AssemblyReference>UiPath.Mail.Activities</AssemblyReference>
+    </scg:List>
+  </TextExpression.ReferencesForImplementation>
+
+  <Sequence DisplayName="Send_Urgent_Mail - 긴급 품질결함 메일 (PRD §5.6)" sap2010:Annotation.AnnotationText="제품결함 필터 → 긴급_품질결함_리포트_*.xlsx 생성 → Outlook 메일(제목 '[긴급]...', 본인 메일 a01039261344@gmail.com) → 3회 재시도(§6 메일실패). Outlook 실발송은 Windows 전용.">
+    <Sequence.Variables>
+      <Variable x:TypeArguments="sd:DataTable" Name="dtDefects" />
+      <Variable x:TypeArguments="x:String" Name="strReportPath" />
+      <Variable x:TypeArguments="x:String" Name="strSubject" />
+      <Variable x:TypeArguments="x:String" Name="strBody" />
+      <Variable x:TypeArguments="x:Int32" Name="intMailRetry" Default="0" />
+    </Sequence.Variables>
+
+    <!-- 1. 제품결함 필터 -->
+    <Assign DisplayName="dtDefects = 제품결함 필터">
+      <Assign.To>
+        <OutArgument x:TypeArguments="sd:DataTable">[dtDefects]</OutArgument>
+      </Assign.To>
+      <Assign.Value>
+        <InArgument x:TypeArguments="sd:DataTable">[in_dtResults.AsEnumerable().Where(Function(r) r("카테고리").ToString = "제품결함").CopyToDataTable()]</InArgument>
+      </Assign.Value>
+    </Assign>
+
+    <Assign DisplayName="리포트 경로 (timestamp)">
+      <Assign.To>
+        <OutArgument x:TypeArguments="x:String">[strReportPath]</OutArgument>
+      </Assign.To>
+      <Assign.Value>
+        <InArgument x:TypeArguments="x:String">["Data\Reports\긴급_품질결함_리포트_" &amp; Now.ToString("yyyyMMdd_HHmmss") &amp; ".xlsx"]</InArgument>
+      </Assign.Value>
+    </Assign>
+
+    <!-- 2. 긴급 리포트 xlsx 생성 -->
+    <ui:ExcelApplicationScope DisplayName="Excel: 긴급 리포트 생성" WorkbookPath="[strReportPath]" Visible="False" AutoSave="True">
+      <ui:ExcelApplicationScope.Body>
+        <ui:WriteRange DisplayName="Write Range 제품결함" SheetName="제품결함" DataTable="[dtDefects]" AddHeaders="True" StartingCell="A1" />
+      </ui:ExcelApplicationScope.Body>
+    </ui:ExcelApplicationScope>
+
+    <!-- 3. 메일 제목/본문 -->
+    <Assign DisplayName="제목/본문 작성">
+      <Assign.To>
+        <OutArgument x:TypeArguments="x:String">[strSubject]</OutArgument>
+      </Assign.To>
+      <Assign.Value>
+        <InArgument x:TypeArguments="x:String">["[긴급] 제품결함 " &amp; dtDefects.Rows.Count.ToString &amp; "건 탐지 - batch " &amp; in_BatchId]</InArgument>
+      </Assign.Value>
+    </Assign>
+    <Assign DisplayName="본문">
+      <Assign.To>
+        <OutArgument x:TypeArguments="x:String">[strBody]</OutArgument>
+      </Assign.To>
+      <Assign.Value>
+        <InArgument x:TypeArguments="x:String">["AI 리뷰 분석에서 제품결함 " &amp; dtDefects.Rows.Count.ToString &amp; "건이 탐지되었습니다. 첨부된 긴급 품질결함 리포트를 확인하세요. (배치: " &amp; in_BatchId &amp; ")"]</InArgument>
+      </Assign.Value>
+    </Assign>
+
+    <!-- 4. Outlook 메일 발송 + 3회 재시도 -->
+    <ui:RetryScope DisplayName="Retry 3회 (메일 발송)" NumberOfRetries="3" RetryInterval="[New TimeSpan(0,0,5)]">
+      <ui:RetryScope.Body>
+        <ui:OutlookMailMessage DisplayName="Send Outlook Mail"
+          Account="a01039261344@gmail.com"
+          To="a01039261344@gmail.com"
+          Subject="[strSubject]"
+          Body="[strBody]"
+          IsBodyHtml="False"
+          sap2010:Annotation.AnnotationText="첨부: strReportPath. 품질관리팀 메일 = department_email(현재 본인 메일로 통일). Windows Outlook 실행 필요.">
+          <ui:OutlookMailMessage.Attachments>
+            <InArgument x:TypeArguments="scg:IEnumerable(x:String)">[New String(){strReportPath}]</InArgument>
+          </ui:OutlookMailMessage.Attachments>
+        </ui:OutlookMailMessage>
+      </ui:RetryScope.Body>
+      <ui:RetryScope.Condition>
+        <ActivityAction>
+          <ActivityAction.Argument>
+            <DelegateInArgument x:TypeArguments="x:Object" Name="ConditionArg" />
+          </ActivityAction.Argument>
+        </ActivityAction>
+      </ui:RetryScope.Condition>
+    </ui:RetryScope>
+
+    <ui:LogMessage DisplayName="Log 메일 발송" Level="Info" Message="[&quot;긴급 메일 발송: &quot; &amp; strSubject]" />
+  </Sequence>
+</Activity>

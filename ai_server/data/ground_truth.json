@@ -1,0 +1,25 @@
+{
+  "_comment": "External verification 정답셋 (PRD §4.10.3). review_id는 sample_20.json과 일치. true_* 값은 사람이 직접 라벨링하여 확정할 것. 아래는 예시 라벨(검토 필요).",
+  "labeled_reviews": [
+    {"review_id": "R001", "true_category": "제품결함", "true_urgency": "high", "true_summary_keywords": ["액정", "파손"]},
+    {"review_id": "R002", "true_category": "제품결함", "true_urgency": "high", "true_summary_keywords": ["전원", "작동", "불량"]},
+    {"review_id": "R003", "true_category": "단순불만", "true_urgency": "low", "true_summary_keywords": ["색상", "취향"]},
+    {"review_id": "R004", "true_category": "긍정", "true_urgency": "low", "true_summary_keywords": ["만족", "재구매"]},
+    {"review_id": "R005", "true_category": "배송문제", "true_urgency": "medium", "true_summary_keywords": ["배송", "지연"]},
+    {"review_id": "R006", "true_category": "배송문제", "true_urgency": "medium", "true_summary_keywords": ["포장", "파손"]},
+    {"review_id": "R007", "true_category": "단순불만", "true_urgency": "low", "true_summary_keywords": ["사이즈"]},
+    {"review_id": "R008", "true_category": "긍정", "true_urgency": "low", "true_summary_keywords": ["향", "발림성"]},
+    {"review_id": "R009", "true_category": "제품결함", "true_urgency": "high", "true_summary_keywords": ["발화", "발열", "타는냄새"]},
+    {"review_id": "R010", "true_category": "배송문제", "true_urgency": "medium", "true_summary_keywords": ["오배송"]},
+    {"review_id": "R011", "true_category": "긍정", "true_urgency": "low", "true_summary_keywords": ["가격", "무난"]},
+    {"review_id": "R012", "true_category": "제품결함", "true_urgency": "high", "true_summary_keywords": ["액정", "금"]},
+    {"review_id": "R013", "true_category": "긍정", "true_urgency": "low", "true_summary_keywords": ["배송", "빠름"]},
+    {"review_id": "R014", "true_category": "제품결함", "true_urgency": "high", "true_summary_keywords": ["버튼", "불량"]},
+    {"review_id": "R015", "true_category": "긍정", "true_urgency": "low", "true_summary_keywords": ["디자인", "만족"]},
+    {"review_id": "R016", "true_category": "단순불만", "true_urgency": "low", "true_summary_keywords": ["냄새"]},
+    {"review_id": "R017", "true_category": "배송문제", "true_urgency": "medium", "true_summary_keywords": ["택배", "젖음"]},
+    {"review_id": "R018", "true_category": "긍정", "true_urgency": "low", "true_summary_keywords": ["기능", "디자인"]},
+    {"review_id": "R019", "true_category": "제품결함", "true_urgency": "high", "true_summary_keywords": ["화면", "터치", "결함"]},
+    {"review_id": "R020", "true_category": "단순불만", "true_urgency": "low", "true_summary_keywords": ["색감"]}
+  ]
+}

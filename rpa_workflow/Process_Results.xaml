@@ -1,0 +1,211 @@
+<Activity mc:Ignorable="sap sap2010 sads" x:Class="Process_Results"
+ xmlns="http://schemas.microsoft.com/netfx/2009/xaml/activities"
+ xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+ xmlns:sap="http://schemas.microsoft.com/netfx/2009/xaml/activities/presentation"
+ xmlns:sap2010="http://schemas.microsoft.com/netfx/2010/xaml/activities/presentation"
+ xmlns:sads="http://schemas.microsoft.com/netfx/2010/xaml/activities/debugger"
+ xmlns:scg="clr-namespace:System.Collections.Generic;assembly=mscorlib"
+ xmlns:sd="clr-namespace:System.Data;assembly=System.Data"
+ xmlns:s="clr-namespace:System;assembly=mscorlib"
+ xmlns:njl="clr-namespace:Newtonsoft.Json.Linq;assembly=Newtonsoft.Json"
+ xmlns:ui="http://schemas.uipath.com/workflow/activities"
+ xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+  <x:Members>
+    <x:Property Name="in_ResponseJson" Type="InArgument(x:String)" />
+    <x:Property Name="out_dtResults" Type="OutArgument(sd:DataTable)" />
+    <x:Property Name="out_DefectCount" Type="OutArgument(x:Int32)" />
+    <x:Property Name="out_SummaryJson" Type="OutArgument(njl:JObject)" />
+  </x:Members>
+  <sap2010:WorkflowViewState.IdRef>Process_Results_1</sap2010:WorkflowViewState.IdRef>
+  <TextExpression.NamespacesForImplementation>
+    <scg:List x:TypeArguments="x:String" Capacity="6">
+      <x:String>System</x:String>
+      <x:String>System.Data</x:String>
+      <x:String>System.Collections.Generic</x:String>
+      <x:String>Newtonsoft.Json</x:String>
+      <x:String>Newtonsoft.Json.Linq</x:String>
+      <x:String>System.Drawing</x:String>
+      <x:String>UiPath.Core.Activities</x:String>
+    </scg:List>
+  </TextExpression.NamespacesForImplementation>
+  <TextExpression.ReferencesForImplementation>
+    <scg:List x:TypeArguments="AssemblyReference" Capacity="5">
+      <AssemblyReference>System.Data</AssemblyReference>
+      <AssemblyReference>System.Drawing</AssemblyReference>
+      <AssemblyReference>Newtonsoft.Json</AssemblyReference>
+      <AssemblyReference>UiPath.System.Activities</AssemblyReference>
+      <AssemblyReference>UiPath.Excel.Activities</AssemblyReference>
+    </scg:List>
+  </TextExpression.ReferencesForImplementation>
+
+  <Sequence DisplayName="Process_Results - JSON 파싱 + Master_Log 누적 + 하이라이트 (PRD §5.5)" sap2010:Annotation.AnnotationText="API 응답 Deserialize → 12컬럼 Master_Log.xlsx 누적 → RED(미분류 OR conf&lt;0.7) / YELLOW(urgency=high). out: defect_count, summary_json. 12컬럼=분석일시·리뷰ID·원본텍스트·별점·작성일·카테고리·요약·담당부서·담당메일·긴급도·확신도·판단근거 (tech-spec §9.3).">
+    <Sequence.Variables>
+      <Variable x:TypeArguments="njl:JObject" Name="jobjResp" />
+      <Variable x:TypeArguments="njl:JArray" Name="jarrResults" />
+      <Variable x:TypeArguments="x:String" Name="strLogPath" Default="Data\Master_Log.xlsx" />
+      <Variable x:TypeArguments="x:Int32" Name="intExistingRows" Default="0" />
+      <Variable x:TypeArguments="x:Int32" Name="intRowIndex" Default="0" />
+      <Variable x:TypeArguments="sd:DataTable" Name="dtExisting" />
+      <Variable x:TypeArguments="x:String" Name="strRange" />
+    </Sequence.Variables>
+
+    <!-- 1. 응답 Deserialize -->
+    <ui:DeserializeJson DisplayName="Deserialize Response JSON" Json="[in_ResponseJson]" JsonObject="[jobjResp]"
+      sap2010:Annotation.AnnotationText="UiPath.Web.Activities Deserialize JSON. 응답 스키마: PRD §4.3 / docs/api_spec.md." />
+
+    <Assign DisplayName="defect_count, summary_analysis 추출">
+      <Assign.To>
+        <OutArgument x:TypeArguments="x:Int32">[out_DefectCount]</OutArgument>
+      </Assign.To>
+      <Assign.Value>
+        <InArgument x:TypeArguments="x:Int32">[CInt(jobjResp("defect_count"))]</InArgument>
+      </Assign.Value>
+    </Assign>
+    <Assign DisplayName="out_SummaryJson = summary_analysis">
+      <Assign.To>
+        <OutArgument x:TypeArguments="njl:JObject">[out_SummaryJson]</OutArgument>
+      </Assign.To>
+      <Assign.Value>
+        <InArgument x:TypeArguments="njl:JObject">[CType(jobjResp("summary_analysis"), JObject)]</InArgument>
+      </Assign.Value>
+    </Assign>
+    <Assign DisplayName="results 배열 추출">
+      <Assign.To>
+        <OutArgument x:TypeArguments="njl:JArray">[jarrResults]</OutArgument>
+      </Assign.To>
+      <Assign.Value>
+        <InArgument x:TypeArguments="njl:JArray">[CType(jobjResp("results"), JArray)]</InArgument>
+      </Assign.Value>
+    </Assign>
+
+    <!-- 2. 결과 DataTable 빌드 (12컬럼) -->
+    <ui:BuildDataTable DisplayName="Build dtResults (12컬럼)" TableName="dtResults" DataTable="[out_dtResults]"
+      sap2010:Annotation.AnnotationText="컬럼 순서: 분석일시,리뷰ID,원본텍스트,별점,작성일,카테고리,요약,담당부서,담당메일,긴급도,확신도,판단근거. 마법사로 재정의.">
+      <ui:BuildDataTable.DataTableInput>&lt;?xml version="1.0" encoding="utf-16"?&gt;&lt;DataTable&gt;PLACEHOLDER - 12컬럼 정의&lt;/DataTable&gt;</ui:BuildDataTable.DataTableInput>
+    </ui:BuildDataTable>
+
+    <!-- 3. 결과 JArray → DataTable 행 적재 -->
+    <ui:ForEach x:TypeArguments="njl:JToken" DisplayName="For Each result → Add Row" Values="[jarrResults]">
+      <ActivityAction x:TypeArguments="njl:JToken">
+        <ActivityAction.Argument>
+          <DelegateInArgument x:TypeArguments="njl:JToken" Name="item" />
+        </ActivityAction.Argument>
+        <ui:AddDataRow DisplayName="Add Data Row (12값)" DataTable="[out_dtResults]"
+          sap2010:Annotation.AnnotationText="ArrayRow = {Now.ToString, item('review_id'), item('original_text'), item('original_rating'), item('review_date'), item('category'), item('summary'), item('department'), item('department_email'), item('urgency'), item('confidence'), item('reasoning')}.">
+          <ui:AddDataRow.ArrayRow>
+            <InArgument x:TypeArguments="s:Object[]">[New Object(){Now.ToString("yyyy-MM-dd HH:mm:ss"), item("review_id").ToString, item("original_text").ToString, item("original_rating"), item("review_date").ToString, item("category").ToString, item("summary").ToString, item("department").ToString, item("department_email").ToString, item("urgency").ToString, CDbl(item("confidence")), item("reasoning").ToString}]</InArgument>
+          </ui:AddDataRow.ArrayRow>
+        </ui:AddDataRow>
+      </ActivityAction>
+    </ui:ForEach>
+
+    <!-- 4. Master_Log.xlsx 누적 + 하이라이트 -->
+    <ui:ExcelApplicationScope DisplayName="Excel: Master_Log.xlsx" WorkbookPath="[strLogPath]" Visible="False" AutoSave="True"
+      sap2010:Annotation.AnnotationText="기존 행수 읽어 append 시작행 계산 → Write Range(헤더 없으면 헤더 포함) → For Each Row 조건부 Set Range Color. RED: 미분류 또는 확신도&lt;0.7. YELLOW: 긴급도=high.">
+      <ui:ExcelApplicationScope.Body>
+        <Sequence DisplayName="엑셀 누적 + 색칠">
+          <Sequence.Variables>
+            <Variable x:TypeArguments="x:Int32" Name="intFirstDataRow" Default="0" />
+          </Sequence.Variables>
+
+          <!-- 4a. 기존 데이터 행수 파악 (헤더 제외) -->
+          <ui:ReadRange DisplayName="Read Range Master_Log (기존 행수)" SheetName="Master_Log" Range="" Result="[dtExisting]" AddHeaders="True"
+            ContinueOnError="True"
+            sap2010:Annotation.AnnotationText="파일 신규/빈 시 0행. ContinueOnError로 신규 파일 대응." />
+          <Assign DisplayName="intExistingRows = 기존행수">
+            <Assign.To>
+              <OutArgument x:TypeArguments="x:Int32">[intExistingRows]</OutArgument>
+            </Assign.To>
+            <Assign.Value>
+              <InArgument x:TypeArguments="x:Int32">[If(dtExisting Is Nothing, 0, dtExisting.Rows.Count)]</InArgument>
+            </Assign.Value>
+          </Assign>
+
+          <!-- 4b. 신규면 헤더 포함 Write, 기존이면 Append -->
+          <If Condition="[intExistingRows = 0]" DisplayName="If 신규 파일">
+            <If.Then>
+              <Sequence DisplayName="WriteRange (헤더 포함)">
+                <ui:WriteRange DisplayName="Write Range A1 (헤더+데이터)" SheetName="Master_Log" DataTable="[out_dtResults]" AddHeaders="True" StartingCell="A1" />
+                <Assign DisplayName="첫 데이터행 = 2">
+                  <Assign.To>
+                    <OutArgument x:TypeArguments="x:Int32">[intFirstDataRow]</OutArgument>
+                  </Assign.To>
+                  <Assign.Value>
+                    <InArgument x:TypeArguments="x:Int32">2</InArgument>
+                  </Assign.Value>
+                </Assign>
+              </Sequence>
+            </If.Then>
+            <If.Else>
+              <Sequence DisplayName="AppendRange (헤더 없이)">
+                <ui:AppendRange DisplayName="Append Range" SheetName="Master_Log" DataTable="[out_dtResults]" />
+                <Assign DisplayName="첫 데이터행 = 기존+2">
+                  <Assign.To>
+                    <OutArgument x:TypeArguments="x:Int32">[intFirstDataRow]</OutArgument>
+                  </Assign.To>
+                  <Assign.Value>
+                    <InArgument x:TypeArguments="x:Int32">[intExistingRows + 2]</InArgument>
+                  </Assign.Value>
+                </Assign>
+              </Sequence>
+            </If.Else>
+          </If>
+
+          <ui:LogMessage DisplayName="Log 엑셀 append" Level="Info" Message="[&quot;Master_Log 누적: &quot; &amp; out_dtResults.Rows.Count.ToString() &amp; &quot;행, 시작행 &quot; &amp; intFirstDataRow.ToString()]" />
+
+          <!-- 4c. 신규 행 조건부 하이라이트 (RED: 미분류/conf&lt;0.7, YELLOW: urgency=high) -->
+          <Assign DisplayName="intRowIndex = 0">
+            <Assign.To>
+              <OutArgument x:TypeArguments="x:Int32">[intRowIndex]</OutArgument>
+            </Assign.To>
+            <Assign.Value>
+              <InArgument x:TypeArguments="x:Int32">0</InArgument>
+            </Assign.Value>
+          </Assign>
+          <ui:ForEachRow DisplayName="For Each Row → 하이라이트" DataTable="[out_dtResults]">
+            <ui:ForEachRow.Body>
+              <ActivityAction x:TypeArguments="sd:DataRow">
+                <ActivityAction.Argument>
+                  <DelegateInArgument x:TypeArguments="sd:DataRow" Name="CurrentRow" />
+                </ActivityAction.Argument>
+                <Sequence DisplayName="행 색칠">
+                  <Assign DisplayName="강조 범위 A{n}:L{n}">
+                    <Assign.To>
+                      <OutArgument x:TypeArguments="x:String">[strRange]</OutArgument>
+                    </Assign.To>
+                    <Assign.Value>
+                      <InArgument x:TypeArguments="x:String">["A" &amp; (intFirstDataRow + intRowIndex).ToString() &amp; ":L" &amp; (intFirstDataRow + intRowIndex).ToString()]</InArgument>
+                    </Assign.Value>
+                  </Assign>
+                  <If Condition="[CurrentRow(&quot;카테고리&quot;).ToString = &quot;미분류&quot; OrElse CDbl(CurrentRow(&quot;확신도&quot;)) &lt; 0.7]" DisplayName="If 미분류/저신뢰 → RED">
+                    <If.Then>
+                      <ui:SetRangeColor DisplayName="Set Range Color RED" SheetName="Master_Log" Range="[strRange]" Color="[System.Drawing.Color.Red]"
+                        sap2010:Annotation.AnnotationText="설치 패키지에 따라 액티비티명이 'Set Range Color'/'Format Cells'일 수 있음 — Studio서 대응 액티비티로 교체." />
+                    </If.Then>
+                    <If.Else>
+                      <If Condition="[CurrentRow(&quot;긴급도&quot;).ToString = &quot;high&quot;]" DisplayName="ElseIf 긴급 → YELLOW">
+                        <If.Then>
+                          <ui:SetRangeColor DisplayName="Set Range Color YELLOW" SheetName="Master_Log" Range="[strRange]" Color="[System.Drawing.Color.Yellow]" />
+                        </If.Then>
+                      </If>
+                    </If.Else>
+                  </If>
+                  <Assign DisplayName="intRowIndex += 1">
+                    <Assign.To>
+                      <OutArgument x:TypeArguments="x:Int32">[intRowIndex]</OutArgument>
+                    </Assign.To>
+                    <Assign.Value>
+                      <InArgument x:TypeArguments="x:Int32">[intRowIndex + 1]</InArgument>
+                    </Assign.Value>
+                  </Assign>
+                </Sequence>
+              </ActivityAction>
+            </ui:ForEachRow.Body>
+          </ui:ForEachRow>
+        </Sequence>
+      </ui:ExcelApplicationScope.Body>
+    </ui:ExcelApplicationScope>
+
+    <ui:LogMessage DisplayName="Log 처리 완료" Level="Info" Message="[&quot;처리 완료: defect=&quot; &amp; out_DefectCount.ToString()]" />
+  </Sequence>
+</Activity>

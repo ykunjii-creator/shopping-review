@@ -1,0 +1,67 @@
+{
+  "name": "ReviewDefectRPA",
+  "description": "올리브영 리뷰 수집 → AI 분석 서버 호출 → 엑셀 기록 → 긴급 메일 발송 RPA (PRD §5).",
+  "main": "Main.xaml",
+  "dependencies": {
+    "UiPath.System.Activities": "[23.10.3]",
+    "UiPath.UIAutomation.Activities": "[23.10.5]",
+    "UiPath.Excel.Activities": "[2.23.4]",
+    "UiPath.Mail.Activities": "[1.23.4]",
+    "UiPath.WebAPI.Activities": "[1.16.2]"
+  },
+  "webServices": [],
+  "entitiesStores": [],
+  "schemaVersion": "4.0",
+  "studioVersion": "23.10.3.0",
+  "projectVersion": "1.0.0",
+  "runtimeOptions": {
+    "autoDispose": false,
+    "isPausable": true,
+    "isAttended": false,
+    "requiresUserInteraction": true,
+    "supportsPersistence": false,
+    "excludedLoggedData": [
+      "Private:*",
+      "*password*"
+    ],
+    "executionType": "Workflow",
+    "readyForPiP": false,
+    "startsInPiP": false,
+    "mustRestoreAllDependencies": true,
+    "pipType": "ChildSession"
+  },
+  "designOptions": {
+    "projectProfile": "Development",
+    "outputType": "Process",
+    "libraryOptions": {
+      "includeOriginalXaml": false,
+      "privateWorkflows": []
+    },
+    "processOptions": {
+      "ignoredFiles": []
+    },
+    "fileInfoCollection": [],
+    "saveToCloud": false
+  },
+  "expressionLanguage": "VisualBasic",
+  "entryPoints": [
+    {
+      "filePath": "Main.xaml",
+      "uniqueId": "00000000-0000-0000-0000-000000000001",
+      "input": [
+        {
+          "name": "in_GoodsUrl",
+          "type": "System.String, System.Private.CoreLib, Version=6.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e",
+          "required": true,
+          "hasDefault": true,
+          "default": "https://www.oliveyoung.co.kr/store/goods/getGoodsDetail.do?goodsNo=<상품번호>&dispCatNo=<카테고리번호>"
+        }
+      ],
+      "output": []
+    }
+  ],
+  "isTemplate": false,
+  "templateProjectData": {},
+  "publishData": {},
+  "targetFramework": "Windows"
+}

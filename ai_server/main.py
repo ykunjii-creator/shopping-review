@@ -1,0 +1,84 @@
+"""FastAPI 진입점 (PRD §4.3).
+
+GET /health, POST /analyze-reviews (배치 → 검증 → 종합분석 → JSON).
+"""
+from __future__ import annotations
+
+import time
+import traceback
+from typing import Optional
+
+from fastapi import FastAPI
+from pydantic import BaseModel, Field
+
+from config import MAIN_MODEL, JUDGE_MODEL, SERVER_PORT
+from agent.aggregator import aggregate_analysis
+from agent.core import _unclassified
+from agent.pipeline import analyze_and_verify
+
+app = FastAPI(title="리뷰 결함 분석 AI 서버", version="2.0")
+
+
+class ReviewIn(BaseModel):
+    review_id: str
+    text: str
+    rating: Optional[int] = None
+    review_date: Optional[str] = None
+
+
+class AnalyzeRequest(BaseModel):
+    batch_id: str
+    reviews: list[ReviewIn]
+
+
+class AnalyzeResponse(BaseModel):
+    batch_id: str
+    processed_count: int
+    defect_count: int
+    results: list[dict]
+    summary_analysis: dict
+    execution_time_ms: int = Field(..., description="처리 소요 시간(ms)")
+
+
+@app.get("/health")
+def health() -> dict:
+    return {"status": "ok", "main_model": MAIN_MODEL, "judge_model": JUDGE_MODEL}
+
+
+@app.post("/analyze-reviews", response_model=AnalyzeResponse)
+def analyze_reviews(req: AnalyzeRequest) -> AnalyzeResponse:
+    start = time.perf_counter()
+    print(f"\n=== 배치 {req.batch_id} 수신: {len(req.reviews)}건 ===", flush=True)
+
+    results: list[dict] = []
+    for r in req.reviews:
+        review = r.model_dump()
+        try:
+            results.append(analyze_and_verify(review))
+        except Exception as e:  # API 에러 등 → 해당 건만 미분류, 배치는 계속 (PRD §6)
+            traceback.print_exc()
+            res = _unclassified(review, f"처리 오류: {e}")
+            res["verification"] = {
+                "rule_based": None, "judge_evaluation": None, "final_status": "error",
+            }
+            results.append(res)
+
+    defect_count = sum(1 for r in results if r.get("category") == "제품결함")
+    summary = aggregate_analysis(results)
+    elapsed = int((time.perf_counter() - start) * 1000)
+    print(f"=== 배치 {req.batch_id} 완료: defect={defect_count}, {elapsed}ms ===\n", flush=True)
+
+    return AnalyzeResponse(
+        batch_id=req.batch_id,
+        processed_count=len(results),
+        defect_count=defect_count,
+        results=results,
+        summary_analysis=summary,
+        execution_time_ms=elapsed,
+    )
+
+
+if __name__ == "__main__":
+    import uvicorn
+
+    uvicorn.run(app, host="0.0.0.0", port=SERVER_PORT)

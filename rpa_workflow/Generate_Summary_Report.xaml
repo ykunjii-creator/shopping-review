@@ -1,0 +1,68 @@
+<Activity mc:Ignorable="sap sap2010 sads" x:Class="Generate_Summary_Report"
+ xmlns="http://schemas.microsoft.com/netfx/2009/xaml/activities"
+ xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+ xmlns:sap="http://schemas.microsoft.com/netfx/2009/xaml/activities/presentation"
+ xmlns:sap2010="http://schemas.microsoft.com/netfx/2010/xaml/activities/presentation"
+ xmlns:sads="http://schemas.microsoft.com/netfx/2010/xaml/activities/debugger"
+ xmlns:scg="clr-namespace:System.Collections.Generic;assembly=mscorlib"
+ xmlns:sd="clr-namespace:System.Data;assembly=System.Data"
+ xmlns:njl="clr-namespace:Newtonsoft.Json.Linq;assembly=Newtonsoft.Json"
+ xmlns:ui="http://schemas.uipath.com/workflow/activities"
+ xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+  <x:Members>
+    <x:Property Name="in_SummaryJson" Type="InArgument(x:String)" />
+  </x:Members>
+  <sap2010:WorkflowViewState.IdRef>Generate_Summary_Report_1</sap2010:WorkflowViewState.IdRef>
+  <TextExpression.NamespacesForImplementation>
+    <scg:List x:TypeArguments="x:String" Capacity="6">
+      <x:String>System</x:String>
+      <x:String>System.Data</x:String>
+      <x:String>System.Collections.Generic</x:String>
+      <x:String>Newtonsoft.Json.Linq</x:String>
+      <x:String>UiPath.Core.Activities</x:String>
+    </scg:List>
+  </TextExpression.NamespacesForImplementation>
+  <TextExpression.ReferencesForImplementation>
+    <scg:List x:TypeArguments="AssemblyReference" Capacity="4">
+      <AssemblyReference>System.Data</AssemblyReference>
+      <AssemblyReference>Newtonsoft.Json</AssemblyReference>
+      <AssemblyReference>UiPath.System.Activities</AssemblyReference>
+      <AssemblyReference>UiPath.Excel.Activities</AssemblyReference>
+    </scg:List>
+  </TextExpression.ReferencesForImplementation>
+
+  <Sequence DisplayName="Generate_Summary_Report - 종합 리포트 4시트 (PRD §5.7, tech-spec §9.5)" sap2010:Annotation.AnnotationText="summary_analysis JSON → 종합_분석_리포트_yyyyMMdd_HHmmss.xlsx. 시트: ①카테고리분포 ②결함유형 ③핵심발견(key_findings) ④검증요약(pass_rate·avg_confidence). 차트 생략, 표만.">
+    <Sequence.Variables>
+      <Variable x:TypeArguments="njl:JObject" Name="jobjSummary" />
+      <Variable x:TypeArguments="x:String" Name="strReportPath" />
+    </Sequence.Variables>
+
+    <ui:DeserializeJson DisplayName="Deserialize summary_analysis" Json="[in_SummaryJson]" JsonObject="[jobjSummary]" />
+
+    <Assign DisplayName="리포트 경로">
+      <Assign.To>
+        <OutArgument x:TypeArguments="x:String">[strReportPath]</OutArgument>
+      </Assign.To>
+      <Assign.Value>
+        <InArgument x:TypeArguments="x:String">["Data\Reports\종합_분석_리포트_" &amp; Now.ToString("yyyyMMdd_HHmmss") &amp; ".xlsx"]</InArgument>
+      </Assign.Value>
+    </Assign>
+
+    <ui:ExcelApplicationScope DisplayName="Excel: 종합 리포트 4시트" WorkbookPath="[strReportPath]" Visible="False" AutoSave="True">
+      <ui:ExcelApplicationScope.Body>
+        <Sequence DisplayName="4시트 작성">
+          <!-- Sheet1: category_distribution → 표 (key,count) -->
+          <ui:LogMessage DisplayName="Sheet1 카테고리 분포" Level="Trace" Message="&quot;category_distribution → 표&quot;" sap2010:Annotation.AnnotationText="jobjSummary('category_distribution')의 각 key/value를 2열 DataTable로 만들어 WriteRange(SheetName='카테고리 분포')." />
+          <!-- Sheet2: defect_types → 표 (결함유형,빈도) -->
+          <ui:LogMessage DisplayName="Sheet2 결함 유형" Level="Trace" Message="&quot;defect_types → 표&quot;" sap2010:Annotation.AnnotationText="jobjSummary('defect_types') → WriteRange(SheetName='결함 유형')." />
+          <!-- Sheet3: key_findings → 리스트 -->
+          <ui:LogMessage DisplayName="Sheet3 핵심 발견" Level="Trace" Message="&quot;key_findings → 리스트&quot;" sap2010:Annotation.AnnotationText="jobjSummary('key_findings') 배열 → 1열 WriteRange(SheetName='핵심 발견')." />
+          <!-- Sheet4: 검증 요약 -->
+          <ui:LogMessage DisplayName="Sheet4 검증 요약" Level="Trace" Message="&quot;verification_pass_rate, average_confidence&quot;" sap2010:Annotation.AnnotationText="verification_pass_rate, average_confidence, trending_keywords, urgency_distribution → WriteRange(SheetName='검증 요약')." />
+        </Sequence>
+      </ui:ExcelApplicationScope.Body>
+    </ui:ExcelApplicationScope>
+
+    <ui:LogMessage DisplayName="Log 종합 리포트" Level="Info" Message="[&quot;종합 리포트 생성: &quot; &amp; strReportPath]" />
+  </Sequence>
+</Activity>
