@@ -1,13 +1,4 @@
-<Activity mc:Ignorable="sap sap2010 sads" x:Class="Verify_RPA_Results"
- xmlns="http://schemas.microsoft.com/netfx/2009/xaml/activities"
- xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
- xmlns:sap="http://schemas.microsoft.com/netfx/2009/xaml/activities/presentation"
- xmlns:sap2010="http://schemas.microsoft.com/netfx/2010/xaml/activities/presentation"
- xmlns:sads="http://schemas.microsoft.com/netfx/2010/xaml/activities/debugger"
- xmlns:scg="clr-namespace:System.Collections.Generic;assembly=mscorlib"
- xmlns:sd="clr-namespace:System.Data;assembly=System.Data"
- xmlns:ui="http://schemas.uipath.com/workflow/activities"
- xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+<Activity mc:Ignorable="sap sap2010" x:Class="Verify_RPA_Results" xmlns="http://schemas.microsoft.com/netfx/2009/xaml/activities" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:sap="http://schemas.microsoft.com/netfx/2009/xaml/activities/presentation" xmlns:sap2010="http://schemas.microsoft.com/netfx/2010/xaml/activities/presentation" xmlns:scg="clr-namespace:System.Collections.Generic;assembly=System.Private.CoreLib" xmlns:sd="clr-namespace:System.Data;assembly=System.Data.Common" xmlns:ui="http://schemas.uipath.com/workflow/activities" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
   <x:Members>
     <x:Property Name="in_ExpectedReviewCount" Type="InArgument(x:Int32)" />
     <x:Property Name="in_HadDefect" Type="InArgument(x:Boolean)" />
@@ -15,71 +6,149 @@
   </x:Members>
   <sap2010:WorkflowViewState.IdRef>Verify_RPA_Results_1</sap2010:WorkflowViewState.IdRef>
   <TextExpression.NamespacesForImplementation>
-    <scg:List x:TypeArguments="x:String" Capacity="6">
+    <scg:List x:TypeArguments="x:String" Capacity="12">
+      <x:String>GlobalConstantsNamespace</x:String>
+      <x:String>GlobalVariablesNamespace</x:String>
       <x:String>System</x:String>
-      <x:String>System.Data</x:String>
-      <x:String>System.IO</x:String>
-      <x:String>System.Linq</x:String>
       <x:String>System.Collections.Generic</x:String>
+      <x:String>System.Collections.ObjectModel</x:String>
+      <x:String>System.Data</x:String>
+      <x:String>System.Linq</x:String>
+      <x:String>UiPath.Core</x:String>
       <x:String>UiPath.Core.Activities</x:String>
     </scg:List>
   </TextExpression.NamespacesForImplementation>
   <TextExpression.ReferencesForImplementation>
-    <scg:List x:TypeArguments="AssemblyReference" Capacity="5">
+    <scg:List x:TypeArguments="AssemblyReference" Capacity="10">
+      <AssemblyReference>System.ComponentModel.TypeConverter</AssemblyReference>
       <AssemblyReference>System.Data</AssemblyReference>
-      <AssemblyReference>System.Core</AssemblyReference>
-      <AssemblyReference>UiPath.System.Activities</AssemblyReference>
+      <AssemblyReference>System.Linq</AssemblyReference>
+      <AssemblyReference>System.ObjectModel</AssemblyReference>
       <AssemblyReference>UiPath.Excel.Activities</AssemblyReference>
-      <AssemblyReference>UiPath.Mail.Activities</AssemblyReference>
+      <AssemblyReference>UiPath.System.Activities</AssemblyReference>
+      <AssemblyReference>UiPath.UiAutomation.Activities</AssemblyReference>
     </scg:List>
   </TextExpression.ReferencesForImplementation>
-
-  <Sequence DisplayName="Verify_RPA_Results - RPA 실행 검증 (PRD §5.8/§5.9, tech-spec §9.6)" sap2010:Annotation.AnnotationText="14주차 코칭 'RPA 실행 결과 검증' 요구사항. ①파일존재 ②필수12컬럼 ③처리건수 ④빈셀 ⑤메일발송 ⑥로그 → execution_log.txt. PASS/FAIL 요약을 out_VerificationResult로 반환.">
+  <Sequence sap2010:Annotation.AnnotationText="①파일존재 ②필수12컬럼 ③처리건수 ④빈셀 ⑤메일발송 검증 → execution_log.txt. PASS/FAIL을 out_VerificationResult로 반환." DisplayName="Verify_RPA_Results - RPA 실행 검증 (PRD §5.8/§5.9, tech-spec §9.6)" sap2010:WorkflowViewState.IdRef="Sequence_7">
     <Sequence.Variables>
-      <Variable x:TypeArguments="scg:List(x:String)" Name="lstErrors" Default="[New List(Of String)()]" />
+      <Variable x:TypeArguments="x:String" Name="strErrors">
+        <Variable.Default>
+          <Literal x:TypeArguments="x:String" Value="" />
+        </Variable.Default>
+      </Variable>
       <Variable x:TypeArguments="x:Boolean" Name="boolMasterExists" />
       <Variable x:TypeArguments="sd:DataTable" Name="dtMaster" />
-      <Variable x:TypeArguments="scg:List(x:String)" Name="lstRequiredCols" Default="[New List(Of String) From {&quot;분석일시&quot;,&quot;리뷰ID&quot;,&quot;원본텍스트&quot;,&quot;별점&quot;,&quot;작성일&quot;,&quot;카테고리&quot;,&quot;요약&quot;,&quot;담당부서&quot;,&quot;담당메일&quot;,&quot;긴급도&quot;,&quot;확신도&quot;,&quot;판단근거&quot;}]" />
+      <Variable x:TypeArguments="x:Boolean" Default="False" Name="boolEmptyCell" />
     </Sequence.Variables>
-
-    <!-- 1. 파일 존재 검증 -->
-    <ui:PathExists DisplayName="Path Exists Master_Log.xlsx" Path="Data\Master_Log.xlsx" PathType="File" Exists="[boolMasterExists]" />
-    <If Condition="[Not boolMasterExists]" DisplayName="If Master 없음">
+    <sap:WorkflowViewStateService.ViewState>
+      <scg:Dictionary x:TypeArguments="x:String, x:Object">
+        <x:Boolean x:Key="IsExpanded">True</x:Boolean>
+      </scg:Dictionary>
+    </sap:WorkflowViewStateService.ViewState>
+    <ui:PathExists Resource="{x:Null}" DisplayName="Path Exists Master_Log.xlsx" Exists="[boolMasterExists]" sap2010:WorkflowViewState.IdRef="PathExists_1" Path="Data\Master_Log.xlsx" PathType="File" />
+    <If Condition="[Not boolMasterExists]" DisplayName="If Master_Log 없음 → ERROR" sap2010:WorkflowViewState.IdRef="If_1">
       <If.Then>
-        <InvokeMethod DisplayName="lstErrors.Add ERROR 파일없음" TargetObject="[lstErrors]" MethodName="Add">
-          <InArgument x:TypeArguments="x:String">ERROR: Master_Log.xlsx 없음</InArgument>
-        </InvokeMethod>
+        <Sequence DisplayName="Then 파일없음" sap2010:WorkflowViewState.IdRef="Sequence_1">
+          <Assign DisplayName="strErrors += 파일없음" sap2010:WorkflowViewState.IdRef="Assign_1">
+            <Assign.To>
+              <OutArgument x:TypeArguments="x:String">[strErrors]</OutArgument>
+            </Assign.To>
+            <Assign.Value>
+              <InArgument x:TypeArguments="x:String">[strErrors &amp; "; ERROR: Master_Log.xlsx 없음"]</InArgument>
+            </Assign.Value>
+          </Assign>
+        </Sequence>
       </If.Then>
     </If>
-
-    <!-- 2. 필수 12컬럼 검증 (헤더 읽어 비교) -->
-    <ui:LogMessage DisplayName="Check 필수컬럼" Level="Trace" Message="&quot;Read Range Master_Log → 헤더에 lstRequiredCols 전부 포함 확인. 누락시 ERROR&quot;" sap2010:Annotation.AnnotationText="Excel Read Range(AddHeaders) → dtMaster.Columns 이름 집합이 lstRequiredCols를 모두 포함하는지. 빠지면 lstErrors.Add('ERROR: 누락컬럼 ...')." />
-
-    <!-- 3. 처리 건수 일치 (신규 추가행 == in_ExpectedReviewCount) -->
-    <ui:LogMessage DisplayName="Check 처리건수" Level="Trace" Message="[&quot;기대 건수: &quot; &amp; in_ExpectedReviewCount.ToString]" sap2010:Annotation.AnnotationText="이번 배치 추가행 수 == in_ExpectedReviewCount. 불일치시 ERROR." />
-
-    <!-- 4. 빈 셀 검증 (카테고리/요약) → WARNING -->
-    <ui:LogMessage DisplayName="Check 빈셀" Level="Trace" Message="&quot;카테고리/요약 빈셀 → WARNING&quot;" sap2010:Annotation.AnnotationText="For Each Row: 카테고리 또는 요약 IsNullOrEmpty → lstErrors.Add('WARNING: 빈셀 ...')." />
-
-    <!-- 5. 메일 발송 검증 (결함 있던 경우) -->
-    <If Condition="[in_HadDefect]" DisplayName="If 결함 있었음 → 메일 검증">
+    <If Condition="[boolMasterExists]" DisplayName="If 파일 존재 → 내용 검증" sap2010:WorkflowViewState.IdRef="If_4">
       <If.Then>
-        <ui:LogMessage DisplayName="Check 메일발송" Level="Trace" Message="&quot;Outlook 보낸편지함 1분내 제목 '[긴급]' 조회&quot;" sap2010:Annotation.AnnotationText="Get Outlook Mail Messages(보낸편지함, Top 10) → 최근 1분내 Subject.Contains('[긴급]') 있는지. 없으면 ERROR." />
+        <Sequence DisplayName="Then 내용 검증" sap2010:WorkflowViewState.IdRef="Sequence_5">
+          <ui:ReadRange AddHeaders="True" DataTable="[dtMaster]" DisplayName="Read Master_Log (Workbook, Excel 불필요)" sap2010:WorkflowViewState.IdRef="ReadRange_1" Range="" SheetName="Master_Log" WorkbookPath="Data\Master_Log.xlsx" />
+          <If Condition="[dtMaster Is Nothing OrElse Not (dtMaster.Columns.Contains(&quot;분석일시&quot;) AndAlso dtMaster.Columns.Contains(&quot;리뷰ID&quot;) AndAlso dtMaster.Columns.Contains(&quot;원본텍스트&quot;) AndAlso dtMaster.Columns.Contains(&quot;별점&quot;) AndAlso dtMaster.Columns.Contains(&quot;작성일&quot;) AndAlso dtMaster.Columns.Contains(&quot;카테고리&quot;) AndAlso dtMaster.Columns.Contains(&quot;요약&quot;) AndAlso dtMaster.Columns.Contains(&quot;담당부서&quot;) AndAlso dtMaster.Columns.Contains(&quot;담당메일&quot;) AndAlso dtMaster.Columns.Contains(&quot;긴급도&quot;) AndAlso dtMaster.Columns.Contains(&quot;확신도&quot;) AndAlso dtMaster.Columns.Contains(&quot;판단근거&quot;))]" DisplayName="If 12컬럼 누락 → ERROR" sap2010:WorkflowViewState.IdRef="If_2">
+            <If.Then>
+              <Sequence DisplayName="Then 컬럼누락" sap2010:WorkflowViewState.IdRef="Sequence_3">
+                <Assign DisplayName="strErrors += 컬럼누락" sap2010:WorkflowViewState.IdRef="Assign_2">
+                  <Assign.To>
+                    <OutArgument x:TypeArguments="x:String">[strErrors]</OutArgument>
+                  </Assign.To>
+                  <Assign.Value>
+                    <InArgument x:TypeArguments="x:String">[strErrors &amp; "; ERROR: 필수 12컬럼 누락"]</InArgument>
+                  </Assign.Value>
+                </Assign>
+              </Sequence>
+            </If.Then>
+          </If>
+          <If Condition="[dtMaster IsNot Nothing AndAlso dtMaster.Rows.Count &lt; in_ExpectedReviewCount]" DisplayName="If 처리건수 부족 → WARNING" sap2010:WorkflowViewState.IdRef="If_3">
+            <If.Then>
+              <Sequence DisplayName="Then 건수부족" sap2010:WorkflowViewState.IdRef="Sequence_4">
+                <Assign DisplayName="strErrors += 건수부족" sap2010:WorkflowViewState.IdRef="Assign_3">
+                  <Assign.To>
+                    <OutArgument x:TypeArguments="x:String">[strErrors]</OutArgument>
+                  </Assign.To>
+                  <Assign.Value>
+                    <InArgument x:TypeArguments="x:String">[strErrors &amp; "; WARNING: 누적행수 " &amp; dtMaster.Rows.Count.ToString() &amp; " &lt; 기대 " &amp; in_ExpectedReviewCount.ToString()]</InArgument>
+                  </Assign.Value>
+                </Assign>
+              </Sequence>
+            </If.Then>
+          </If>
+          <If Condition="[dtMaster IsNot Nothing AndAlso dtMaster.Columns.Contains(&quot;카테고리&quot;) AndAlso dtMaster.Columns.Contains(&quot;요약&quot;)]" DisplayName="If 빈셀 검사 가능" sap2010:WorkflowViewState.IdRef="If_6">
+            <If.Then>
+              <ui:ForEach x:TypeArguments="sd:DataRow" CurrentIndex="{x:Null}" DisplayName="For Each Row → 빈셀 검사" sap2010:WorkflowViewState.IdRef="ForEach`1_1" Values="[dtMaster.Rows]">
+                <ui:ForEach.Body>
+                  <ActivityAction x:TypeArguments="sd:DataRow">
+                    <ActivityAction.Argument>
+                      <DelegateInArgument x:TypeArguments="sd:DataRow" Name="CurrentRow" />
+                    </ActivityAction.Argument>
+                    <If Condition="[String.IsNullOrWhiteSpace(CurrentRow(&quot;카테고리&quot;).ToString) OrElse String.IsNullOrWhiteSpace(CurrentRow(&quot;요약&quot;).ToString)]" DisplayName="If 빈셀" sap2010:WorkflowViewState.IdRef="If_7">
+                      <If.Then>
+                        <Assign DisplayName="boolEmptyCell = True" sap2010:WorkflowViewState.IdRef="Assign_5">
+                          <Assign.To>
+                            <OutArgument x:TypeArguments="x:Boolean">[boolEmptyCell]</OutArgument>
+                          </Assign.To>
+                          <Assign.Value>
+                            <InArgument x:TypeArguments="x:Boolean">True</InArgument>
+                          </Assign.Value>
+                        </Assign>
+                      </If.Then>
+                    </If>
+                  </ActivityAction>
+                </ui:ForEach.Body>
+              </ui:ForEach>
+            </If.Then>
+          </If>
+        </Sequence>
       </If.Then>
     </If>
-
-    <!-- 6. 결과 집계 → out_VerificationResult -->
-    <Assign DisplayName="out_VerificationResult 집계">
+    <If Condition="[boolEmptyCell]" DisplayName="If 빈셀 발견 → WARNING" sap2010:WorkflowViewState.IdRef="If_8">
+      <If.Then>
+        <Assign DisplayName="strErrors += 빈셀" sap2010:WorkflowViewState.IdRef="Assign_6">
+          <Assign.To>
+            <OutArgument x:TypeArguments="x:String">[strErrors]</OutArgument>
+          </Assign.To>
+          <Assign.Value>
+            <InArgument x:TypeArguments="x:String">[strErrors &amp; "; WARNING: 빈 셀(카테고리/요약) 발견"]</InArgument>
+          </Assign.Value>
+        </Assign>
+      </If.Then>
+    </If>
+    <If Condition="[in_HadDefect]" DisplayName="If 결함 있었음 → 메일 검증" sap2010:WorkflowViewState.IdRef="If_5">
+      <If.Then>
+        <Sequence DisplayName="Then 메일검증" sap2010:WorkflowViewState.IdRef="Sequence_6">
+          <ui:LogMessage DisplayName="Check 메일발송 (런타임)" sap2010:WorkflowViewState.IdRef="LogMessage_2" Level="Info" Message="[&quot;메일 검증: Outlook 보낸편지함서 최근 긴급 메일 확인 필요 (Windows Outlook 런타임)&quot;]" />
+        </Sequence>
+      </If.Then>
+    </If>
+    <Assign DisplayName="out_VerificationResult 집계" sap2010:WorkflowViewState.IdRef="Assign_4">
       <Assign.To>
         <OutArgument x:TypeArguments="x:String">[out_VerificationResult]</OutArgument>
       </Assign.To>
       <Assign.Value>
-        <InArgument x:TypeArguments="x:String">[If(lstErrors.Count = 0, "PASS: 모든 검증 통과", "FAIL: " &amp; String.Join("; ", lstErrors))]</InArgument>
+        <InArgument x:TypeArguments="x:String">[If(strErrors.Contains("ERROR"), "FAIL:" &amp; strErrors, If(String.IsNullOrEmpty(strErrors), "PASS: 모든 검증 통과", "PASS(경고):" &amp; strErrors))]</InArgument>
       </Assign.Value>
     </Assign>
-
-    <!-- 7. execution_log.txt 기록 -->
-    <ui:AppendLine DisplayName="Append execution_log.txt" FileName="Logs\execution_log.txt" Text="[Now.ToString(&quot;yyyy-MM-dd HH:mm:ss&quot;) &amp; &quot; [VERIFY] &quot; &amp; out_VerificationResult]" />
-    <ui:LogMessage DisplayName="Log 검증 결과" Level="Info" Message="[out_VerificationResult]" />
+    <ui:CreateDirectory ContinueOnError="{x:Null}" Output="{x:Null}" DisplayName="Create Logs" sap2010:WorkflowViewState.IdRef="CreateDirectory_1" Path="Logs" />
+    <ui:AppendLine File="{x:Null}" DisplayName="Append execution_log.txt" FileName="Logs\execution_log.txt" sap2010:WorkflowViewState.IdRef="AppendLine_1" Text="[DateTime.Now.ToString(&quot;yyyy-MM-dd HH:mm:ss&quot;) &amp; &quot; [VERIFY] &quot; &amp; out_VerificationResult]" UseDefaultEncoding="False" />
+    <ui:LogMessage DisplayName="Log 검증 결과" sap2010:WorkflowViewState.IdRef="LogMessage_3" Level="Info" Message="[out_VerificationResult]" />
   </Sequence>
 </Activity>

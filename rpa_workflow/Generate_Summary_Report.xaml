@@ -1,68 +1,116 @@
-<Activity mc:Ignorable="sap sap2010 sads" x:Class="Generate_Summary_Report"
- xmlns="http://schemas.microsoft.com/netfx/2009/xaml/activities"
- xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
- xmlns:sap="http://schemas.microsoft.com/netfx/2009/xaml/activities/presentation"
- xmlns:sap2010="http://schemas.microsoft.com/netfx/2010/xaml/activities/presentation"
- xmlns:sads="http://schemas.microsoft.com/netfx/2010/xaml/activities/debugger"
- xmlns:scg="clr-namespace:System.Collections.Generic;assembly=mscorlib"
- xmlns:sd="clr-namespace:System.Data;assembly=System.Data"
- xmlns:njl="clr-namespace:Newtonsoft.Json.Linq;assembly=Newtonsoft.Json"
- xmlns:ui="http://schemas.uipath.com/workflow/activities"
- xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+<Activity mc:Ignorable="sap sap2010" x:Class="Generate_Summary_Report" xmlns="http://schemas.microsoft.com/netfx/2009/xaml/activities" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:njl="clr-namespace:Newtonsoft.Json.Linq;assembly=Newtonsoft.Json" xmlns:sap="http://schemas.microsoft.com/netfx/2009/xaml/activities/presentation" xmlns:sap2010="http://schemas.microsoft.com/netfx/2010/xaml/activities/presentation" xmlns:scg="clr-namespace:System.Collections.Generic;assembly=System.Private.CoreLib" xmlns:sd="clr-namespace:System.Data;assembly=System.Data.Common" xmlns:ui="http://schemas.uipath.com/workflow/activities" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
   <x:Members>
     <x:Property Name="in_SummaryJson" Type="InArgument(x:String)" />
   </x:Members>
   <sap2010:WorkflowViewState.IdRef>Generate_Summary_Report_1</sap2010:WorkflowViewState.IdRef>
   <TextExpression.NamespacesForImplementation>
-    <scg:List x:TypeArguments="x:String" Capacity="6">
-      <x:String>System</x:String>
-      <x:String>System.Data</x:String>
-      <x:String>System.Collections.Generic</x:String>
+    <scg:List x:TypeArguments="x:String" Capacity="12">
+      <x:String>GlobalConstantsNamespace</x:String>
+      <x:String>GlobalVariablesNamespace</x:String>
       <x:String>Newtonsoft.Json.Linq</x:String>
+      <x:String>System</x:String>
+      <x:String>System.Collections.Generic</x:String>
+      <x:String>System.Collections.ObjectModel</x:String>
+      <x:String>System.Data</x:String>
+      <x:String>System.Linq</x:String>
+      <x:String>UiPath.Core</x:String>
       <x:String>UiPath.Core.Activities</x:String>
     </scg:List>
   </TextExpression.NamespacesForImplementation>
   <TextExpression.ReferencesForImplementation>
-    <scg:List x:TypeArguments="AssemblyReference" Capacity="4">
-      <AssemblyReference>System.Data</AssemblyReference>
+    <scg:List x:TypeArguments="AssemblyReference" Capacity="16">
       <AssemblyReference>Newtonsoft.Json</AssemblyReference>
-      <AssemblyReference>UiPath.System.Activities</AssemblyReference>
+      <AssemblyReference>System.ComponentModel.TypeConverter</AssemblyReference>
+      <AssemblyReference>System.Data</AssemblyReference>
+      <AssemblyReference>System.Linq</AssemblyReference>
+      <AssemblyReference>System.ObjectModel</AssemblyReference>
       <AssemblyReference>UiPath.Excel.Activities</AssemblyReference>
+      <AssemblyReference>UiPath.System.Activities</AssemblyReference>
+      <AssemblyReference>UiPath.UiAutomation.Activities</AssemblyReference>
     </scg:List>
   </TextExpression.ReferencesForImplementation>
-
-  <Sequence DisplayName="Generate_Summary_Report - 종합 리포트 4시트 (PRD §5.7, tech-spec §9.5)" sap2010:Annotation.AnnotationText="summary_analysis JSON → 종합_분석_리포트_yyyyMMdd_HHmmss.xlsx. 시트: ①카테고리분포 ②결함유형 ③핵심발견(key_findings) ④검증요약(pass_rate·avg_confidence). 차트 생략, 표만.">
+  <Sequence sap2010:Annotation.AnnotationText="summary_analysis JSON → 종합_분석_리포트_yyyyMMdd_HHmmss.xlsx. 시트: ①카테고리 분포 ②결함 유형 ③핵심 발견 ④검증 요약. Workbook Write Range(파일경로 직접) 사용 — Excel App Scope 불요." DisplayName="Generate_Summary_Report - 종합 리포트 4시트 (PRD §5.7, tech-spec §9.5)" sap2010:WorkflowViewState.IdRef="Sequence_4">
     <Sequence.Variables>
       <Variable x:TypeArguments="njl:JObject" Name="jobjSummary" />
       <Variable x:TypeArguments="x:String" Name="strReportPath" />
+      <Variable x:TypeArguments="sd:DataTable" Name="dtCat" />
+      <Variable x:TypeArguments="sd:DataTable" Name="dtDefect" />
+      <Variable x:TypeArguments="sd:DataTable" Name="dtFindings" />
+      <Variable x:TypeArguments="sd:DataTable" Name="dtVerify" />
     </Sequence.Variables>
-
-    <ui:DeserializeJson DisplayName="Deserialize summary_analysis" Json="[in_SummaryJson]" JsonObject="[jobjSummary]" />
-
-    <Assign DisplayName="리포트 경로">
+    <sap:WorkflowViewStateService.ViewState>
+      <scg:Dictionary x:TypeArguments="x:String, x:Object">
+        <x:Boolean x:Key="IsExpanded">True</x:Boolean>
+      </scg:Dictionary>
+    </sap:WorkflowViewStateService.ViewState>
+    <ui:DeserializeJson x:TypeArguments="njl:JObject" DisplayName="Deserialize summary_analysis" sap2010:WorkflowViewState.IdRef="DeserializeJson`1_1" JsonObject="[jobjSummary]" JsonString="[in_SummaryJson]" />
+    <Assign DisplayName="리포트 경로" sap2010:WorkflowViewState.IdRef="Assign_1">
       <Assign.To>
         <OutArgument x:TypeArguments="x:String">[strReportPath]</OutArgument>
       </Assign.To>
       <Assign.Value>
-        <InArgument x:TypeArguments="x:String">["Data\Reports\종합_분석_리포트_" &amp; Now.ToString("yyyyMMdd_HHmmss") &amp; ".xlsx"]</InArgument>
+        <InArgument x:TypeArguments="x:String">["Data\Reports\종합_분석_리포트_" &amp; DateTime.Now.ToString("yyyyMMdd_HHmmss") &amp; ".xlsx"]</InArgument>
       </Assign.Value>
     </Assign>
-
-    <ui:ExcelApplicationScope DisplayName="Excel: 종합 리포트 4시트" WorkbookPath="[strReportPath]" Visible="False" AutoSave="True">
-      <ui:ExcelApplicationScope.Body>
-        <Sequence DisplayName="4시트 작성">
-          <!-- Sheet1: category_distribution → 표 (key,count) -->
-          <ui:LogMessage DisplayName="Sheet1 카테고리 분포" Level="Trace" Message="&quot;category_distribution → 표&quot;" sap2010:Annotation.AnnotationText="jobjSummary('category_distribution')의 각 key/value를 2열 DataTable로 만들어 WriteRange(SheetName='카테고리 분포')." />
-          <!-- Sheet2: defect_types → 표 (결함유형,빈도) -->
-          <ui:LogMessage DisplayName="Sheet2 결함 유형" Level="Trace" Message="&quot;defect_types → 표&quot;" sap2010:Annotation.AnnotationText="jobjSummary('defect_types') → WriteRange(SheetName='결함 유형')." />
-          <!-- Sheet3: key_findings → 리스트 -->
-          <ui:LogMessage DisplayName="Sheet3 핵심 발견" Level="Trace" Message="&quot;key_findings → 리스트&quot;" sap2010:Annotation.AnnotationText="jobjSummary('key_findings') 배열 → 1열 WriteRange(SheetName='핵심 발견')." />
-          <!-- Sheet4: 검증 요약 -->
-          <ui:LogMessage DisplayName="Sheet4 검증 요약" Level="Trace" Message="&quot;verification_pass_rate, average_confidence&quot;" sap2010:Annotation.AnnotationText="verification_pass_rate, average_confidence, trending_keywords, urgency_distribution → WriteRange(SheetName='검증 요약')." />
-        </Sequence>
-      </ui:ExcelApplicationScope.Body>
-    </ui:ExcelApplicationScope>
-
-    <ui:LogMessage DisplayName="Log 종합 리포트" Level="Info" Message="[&quot;종합 리포트 생성: &quot; &amp; strReportPath]" />
+    <ui:BuildDataTable DataTable="[dtCat]" DisplayName="Build dtCat (항목,값)" sap2010:WorkflowViewState.IdRef="BuildDataTable_1" TableInfo="&lt;NewDataSet&gt;&lt;xs:schema id=&quot;NewDataSet&quot; xmlns=&quot;&quot; xmlns:xs=&quot;http://www.w3.org/2001/XMLSchema&quot; xmlns:msdata=&quot;urn:schemas-microsoft-com:xml-msdata&quot;&gt;&lt;xs:element name=&quot;NewDataSet&quot; msdata:IsDataSet=&quot;true&quot; msdata:MainDataTable=&quot;TableName&quot; msdata:UseCurrentLocale=&quot;true&quot;&gt;&lt;xs:complexType&gt;&lt;xs:choice minOccurs=&quot;0&quot; maxOccurs=&quot;unbounded&quot;&gt;&lt;xs:element name=&quot;TableName&quot;&gt;&lt;xs:complexType&gt;&lt;xs:sequence&gt;&lt;xs:element name=&quot;항목&quot; type=&quot;xs:string&quot; minOccurs=&quot;0&quot; /&gt;&lt;xs:element name=&quot;값&quot; type=&quot;xs:string&quot; minOccurs=&quot;0&quot; /&gt;&lt;/xs:sequence&gt;&lt;/xs:complexType&gt;&lt;/xs:element&gt;&lt;/xs:choice&gt;&lt;/xs:complexType&gt;&lt;/xs:element&gt;&lt;/xs:schema&gt;&lt;/NewDataSet&gt;" />
+    <If Condition="[jobjSummary(&quot;category_distribution&quot;) IsNot Nothing]" DisplayName="If category_distribution 존재" sap2010:WorkflowViewState.IdRef="If_3">
+     <If.Then>
+    <ui:ForEach x:TypeArguments="njl:JProperty" CurrentIndex="{x:Null}" DisplayName="ForEach category_distribution" sap2010:WorkflowViewState.IdRef="ForEach`1_1" Values="[CType(jobjSummary(&quot;category_distribution&quot;), JObject).Properties()]">
+      <ui:ForEach.Body>
+        <ActivityAction x:TypeArguments="njl:JProperty">
+          <ActivityAction.Argument>
+            <DelegateInArgument x:TypeArguments="njl:JProperty" Name="item" />
+          </ActivityAction.Argument>
+          <Sequence DisplayName="Body" sap2010:WorkflowViewState.IdRef="Sequence_1">
+            <ui:AddDataRow DataRow="{x:Null}" ArrayRow="[New Object(){item.Name, item.Value.ToString()}]" DataTable="[dtCat]" DisplayName="Add Row (카테고리,건수)" sap2010:WorkflowViewState.IdRef="AddDataRow_1" />
+          </Sequence>
+        </ActivityAction>
+      </ui:ForEach.Body>
+    </ui:ForEach>
+     </If.Then>
+    </If>
+    <ui:BuildDataTable DataTable="[dtDefect]" DisplayName="Build dtDefect (항목,값)" sap2010:WorkflowViewState.IdRef="BuildDataTable_2" TableInfo="&lt;NewDataSet&gt;&lt;xs:schema id=&quot;NewDataSet&quot; xmlns=&quot;&quot; xmlns:xs=&quot;http://www.w3.org/2001/XMLSchema&quot; xmlns:msdata=&quot;urn:schemas-microsoft-com:xml-msdata&quot;&gt;&lt;xs:element name=&quot;NewDataSet&quot; msdata:IsDataSet=&quot;true&quot; msdata:MainDataTable=&quot;TableName&quot; msdata:UseCurrentLocale=&quot;true&quot;&gt;&lt;xs:complexType&gt;&lt;xs:choice minOccurs=&quot;0&quot; maxOccurs=&quot;unbounded&quot;&gt;&lt;xs:element name=&quot;TableName&quot;&gt;&lt;xs:complexType&gt;&lt;xs:sequence&gt;&lt;xs:element name=&quot;항목&quot; type=&quot;xs:string&quot; minOccurs=&quot;0&quot; /&gt;&lt;xs:element name=&quot;값&quot; type=&quot;xs:string&quot; minOccurs=&quot;0&quot; /&gt;&lt;/xs:sequence&gt;&lt;/xs:complexType&gt;&lt;/xs:element&gt;&lt;/xs:choice&gt;&lt;/xs:complexType&gt;&lt;/xs:element&gt;&lt;/xs:schema&gt;&lt;/NewDataSet&gt;" />
+    <If Condition="[jobjSummary(&quot;defect_types&quot;) IsNot Nothing]" DisplayName="If defect_types 존재" sap2010:WorkflowViewState.IdRef="If_1">
+      <If.Then>
+        <ui:ForEach x:TypeArguments="njl:JProperty" CurrentIndex="{x:Null}" DisplayName="ForEach defect_types" sap2010:WorkflowViewState.IdRef="ForEach`1_2" Values="[CType(jobjSummary(&quot;defect_types&quot;), JObject).Properties()]">
+          <ui:ForEach.Body>
+            <ActivityAction x:TypeArguments="njl:JProperty">
+              <ActivityAction.Argument>
+                <DelegateInArgument x:TypeArguments="njl:JProperty" Name="item" />
+              </ActivityAction.Argument>
+              <Sequence DisplayName="Body" sap2010:WorkflowViewState.IdRef="Sequence_2">
+                <ui:AddDataRow DataRow="{x:Null}" ArrayRow="[New Object(){item.Name, item.Value.ToString()}]" DataTable="[dtDefect]" DisplayName="Add Row (결함유형,빈도)" sap2010:WorkflowViewState.IdRef="AddDataRow_2" />
+              </Sequence>
+            </ActivityAction>
+          </ui:ForEach.Body>
+        </ui:ForEach>
+      </If.Then>
+    </If>
+    <ui:BuildDataTable DataTable="[dtFindings]" DisplayName="Build dtFindings (핵심 발견)" sap2010:WorkflowViewState.IdRef="BuildDataTable_3" TableInfo="&lt;NewDataSet&gt;&lt;xs:schema id=&quot;NewDataSet&quot; xmlns=&quot;&quot; xmlns:xs=&quot;http://www.w3.org/2001/XMLSchema&quot; xmlns:msdata=&quot;urn:schemas-microsoft-com:xml-msdata&quot;&gt;&lt;xs:element name=&quot;NewDataSet&quot; msdata:IsDataSet=&quot;true&quot; msdata:MainDataTable=&quot;TableName&quot; msdata:UseCurrentLocale=&quot;true&quot;&gt;&lt;xs:complexType&gt;&lt;xs:choice minOccurs=&quot;0&quot; maxOccurs=&quot;unbounded&quot;&gt;&lt;xs:element name=&quot;TableName&quot;&gt;&lt;xs:complexType&gt;&lt;xs:sequence&gt;&lt;xs:element name=&quot;핵심발견&quot; type=&quot;xs:string&quot; minOccurs=&quot;0&quot; /&gt;&lt;/xs:sequence&gt;&lt;/xs:complexType&gt;&lt;/xs:element&gt;&lt;/xs:choice&gt;&lt;/xs:complexType&gt;&lt;/xs:element&gt;&lt;/xs:schema&gt;&lt;/NewDataSet&gt;" />
+    <If Condition="[jobjSummary(&quot;key_findings&quot;) IsNot Nothing]" DisplayName="If key_findings 존재" sap2010:WorkflowViewState.IdRef="If_2">
+      <If.Then>
+        <ui:ForEach x:TypeArguments="njl:JToken" CurrentIndex="{x:Null}" DisplayName="ForEach key_findings" sap2010:WorkflowViewState.IdRef="ForEach`1_3" Values="[CType(jobjSummary(&quot;key_findings&quot;), JArray)]">
+          <ui:ForEach.Body>
+            <ActivityAction x:TypeArguments="njl:JToken">
+              <ActivityAction.Argument>
+                <DelegateInArgument x:TypeArguments="njl:JToken" Name="item" />
+              </ActivityAction.Argument>
+              <Sequence DisplayName="Body" sap2010:WorkflowViewState.IdRef="Sequence_3">
+                <ui:AddDataRow DataRow="{x:Null}" ArrayRow="[New Object(){item.ToString()}]" DataTable="[dtFindings]" DisplayName="Add Row (발견)" sap2010:WorkflowViewState.IdRef="AddDataRow_3" />
+              </Sequence>
+            </ActivityAction>
+          </ui:ForEach.Body>
+        </ui:ForEach>
+      </If.Then>
+    </If>
+    <ui:BuildDataTable DataTable="[dtVerify]" DisplayName="Build dtVerify (항목,값)" sap2010:WorkflowViewState.IdRef="BuildDataTable_4" TableInfo="&lt;NewDataSet&gt;&lt;xs:schema id=&quot;NewDataSet&quot; xmlns=&quot;&quot; xmlns:xs=&quot;http://www.w3.org/2001/XMLSchema&quot; xmlns:msdata=&quot;urn:schemas-microsoft-com:xml-msdata&quot;&gt;&lt;xs:element name=&quot;NewDataSet&quot; msdata:IsDataSet=&quot;true&quot; msdata:MainDataTable=&quot;TableName&quot; msdata:UseCurrentLocale=&quot;true&quot;&gt;&lt;xs:complexType&gt;&lt;xs:choice minOccurs=&quot;0&quot; maxOccurs=&quot;unbounded&quot;&gt;&lt;xs:element name=&quot;TableName&quot;&gt;&lt;xs:complexType&gt;&lt;xs:sequence&gt;&lt;xs:element name=&quot;항목&quot; type=&quot;xs:string&quot; minOccurs=&quot;0&quot; /&gt;&lt;xs:element name=&quot;값&quot; type=&quot;xs:string&quot; minOccurs=&quot;0&quot; /&gt;&lt;/xs:sequence&gt;&lt;/xs:complexType&gt;&lt;/xs:element&gt;&lt;/xs:choice&gt;&lt;/xs:complexType&gt;&lt;/xs:element&gt;&lt;/xs:schema&gt;&lt;/NewDataSet&gt;" />
+    <ui:AddDataRow DataRow="{x:Null}" ArrayRow="[New Object(){&quot;검증 통과율&quot;, If(jobjSummary(&quot;verification_pass_rate&quot;) Is Nothing, &quot;&quot;, jobjSummary(&quot;verification_pass_rate&quot;).ToString())}]" DataTable="[dtVerify]" DisplayName="검증 통과율" sap2010:WorkflowViewState.IdRef="AddDataRow_4" />
+    <ui:AddDataRow DataRow="{x:Null}" ArrayRow="[New Object(){&quot;평균 확신도&quot;, If(jobjSummary(&quot;average_confidence&quot;) Is Nothing, &quot;&quot;, jobjSummary(&quot;average_confidence&quot;).ToString())}]" DataTable="[dtVerify]" DisplayName="평균 확신도" sap2010:WorkflowViewState.IdRef="AddDataRow_5" />
+    <ui:CreateDirectory ContinueOnError="{x:Null}" Output="{x:Null}" DisplayName="Create Data\Reports" sap2010:WorkflowViewState.IdRef="CreateDirectory_1" Path="Data\Reports" />
+    <ui:WriteRange AddHeaders="True" DataTable="[dtCat]" DisplayName="Write 카테고리 분포" sap2010:WorkflowViewState.IdRef="WriteRange_1" SheetName="카테고리 분포" StartingCell="A1" WorkbookPath="[strReportPath]" />
+    <ui:WriteRange AddHeaders="True" DataTable="[dtDefect]" DisplayName="Write 결함 유형" sap2010:WorkflowViewState.IdRef="WriteRange_2" SheetName="결함 유형" StartingCell="A1" WorkbookPath="[strReportPath]" />
+    <ui:WriteRange AddHeaders="True" DataTable="[dtFindings]" DisplayName="Write 핵심 발견" sap2010:WorkflowViewState.IdRef="WriteRange_3" SheetName="핵심 발견" StartingCell="A1" WorkbookPath="[strReportPath]" />
+    <ui:WriteRange AddHeaders="True" DataTable="[dtVerify]" DisplayName="Write 검증 요약" sap2010:WorkflowViewState.IdRef="WriteRange_4" SheetName="검증 요약" StartingCell="A1" WorkbookPath="[strReportPath]" />
+    <ui:LogMessage DisplayName="Log 종합 리포트" sap2010:WorkflowViewState.IdRef="LogMessage_1" Level="Info" Message="[&quot;종합 리포트 생성: &quot; &amp; strReportPath]" />
   </Sequence>
 </Activity>

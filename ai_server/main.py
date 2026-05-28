@@ -9,7 +9,7 @@ import traceback
 from typing import Optional
 
 from fastapi import FastAPI
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, field_validator
 
 from config import MAIN_MODEL, JUDGE_MODEL, SERVER_PORT
 from agent.aggregator import aggregate_analysis
@@ -24,6 +24,23 @@ class ReviewIn(BaseModel):
     text: str
     rating: Optional[int] = None
     review_date: Optional[str] = None
+
+    @field_validator("rating", mode="before")
+    @classmethod
+    def _coerce_rating(cls, v):
+        # RPA의 DataTable은 별점을 문자열("5")이나 빈 값("")로 보냄.
+        # 빈/비숫자는 None으로 흡수해 한 건 때문에 배치 전체가 422로 죽는 것을 막는다.
+        if v is None:
+            return None
+        if isinstance(v, str):
+            v = v.strip()
+            if not v:
+                return None
+            try:
+                return int(float(v))
+            except ValueError:
+                return None
+        return v
 
 
 class AnalyzeRequest(BaseModel):

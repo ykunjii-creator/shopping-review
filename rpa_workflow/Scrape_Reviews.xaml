@@ -1,100 +1,141 @@
-<Activity mc:Ignorable="sap sap2010 sads" x:Class="Scrape_Reviews"
- xmlns="http://schemas.microsoft.com/netfx/2009/xaml/activities"
- xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
- xmlns:sap="http://schemas.microsoft.com/netfx/2009/xaml/activities/presentation"
- xmlns:sap2010="http://schemas.microsoft.com/netfx/2010/xaml/activities/presentation"
- xmlns:sads="http://schemas.microsoft.com/netfx/2010/xaml/activities/debugger"
- xmlns:scg="clr-namespace:System.Collections.Generic;assembly=mscorlib"
- xmlns:sd="clr-namespace:System.Data;assembly=System.Data"
- xmlns:ui="http://schemas.uipath.com/workflow/activities"
- xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+<Activity mc:Ignorable="sap sap2010" x:Class="Scrape_Reviews" xmlns="http://schemas.microsoft.com/netfx/2009/xaml/activities" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:sap="http://schemas.microsoft.com/netfx/2009/xaml/activities/presentation" xmlns:sap2010="http://schemas.microsoft.com/netfx/2010/xaml/activities/presentation" xmlns:scg="clr-namespace:System.Collections.Generic;assembly=System.Private.CoreLib" xmlns:sd="clr-namespace:System.Data;assembly=System.Data.Common" xmlns:ui="http://schemas.uipath.com/workflow/activities" xmlns:uix="http://schemas.uipath.com/workflow/activities/uix" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
   <x:Members>
     <x:Property Name="in_GoodsUrl" Type="InArgument(x:String)" />
     <x:Property Name="out_dtReviews" Type="OutArgument(sd:DataTable)" />
   </x:Members>
   <sap2010:WorkflowViewState.IdRef>Scrape_Reviews_1</sap2010:WorkflowViewState.IdRef>
   <TextExpression.NamespacesForImplementation>
-    <scg:List x:TypeArguments="x:String" Capacity="5">
+    <scg:List x:TypeArguments="x:String" Capacity="40">
+      <x:String>GlobalConstantsNamespace</x:String>
+      <x:String>GlobalVariablesNamespace</x:String>
       <x:String>System</x:String>
-      <x:String>System.Data</x:String>
       <x:String>System.Collections.Generic</x:String>
+      <x:String>System.Collections.ObjectModel</x:String>
+      <x:String>System.Data</x:String>
+      <x:String>System.Linq</x:String>
+      <x:String>UiPath.Core</x:String>
       <x:String>UiPath.Core.Activities</x:String>
+      <x:String>System.Activities</x:String>
+      <x:String>System.Drawing</x:String>
+      <x:String>System.Runtime.Serialization</x:String>
+      <x:String>System.Collections</x:String>
+      <x:String>UiPath.UIAutomationNext.Enums</x:String>
+      <x:String>UiPath.UIAutomationCore.Contracts</x:String>
+      <x:String>UiPath.UIAutomationNext.Activities</x:String>
+      <x:String>UiPath.Shared.Activities</x:String>
+      <x:String>UiPath.Platform.ObjectLibrary</x:String>
+      <x:String>System.Activities.Statements</x:String>
+      <x:String>System.Linq.Expressions</x:String>
+      <x:String>System.ComponentModel</x:String>
+      <x:String>System.Xml.Serialization</x:String>
+      <x:String>UiPath.UIAutomationNext.Models.ExtractData</x:String>
     </scg:List>
   </TextExpression.NamespacesForImplementation>
   <TextExpression.ReferencesForImplementation>
-    <scg:List x:TypeArguments="AssemblyReference" Capacity="3">
+    <scg:List x:TypeArguments="AssemblyReference" Capacity="48">
+      <AssemblyReference>System.ComponentModel.TypeConverter</AssemblyReference>
       <AssemblyReference>System.Data</AssemblyReference>
+      <AssemblyReference>System.Linq</AssemblyReference>
+      <AssemblyReference>System.ObjectModel</AssemblyReference>
       <AssemblyReference>UiPath.System.Activities</AssemblyReference>
-      <AssemblyReference>UiPath.UIAutomation.Activities</AssemblyReference>
+      <AssemblyReference>UiPath.UiAutomation.Activities</AssemblyReference>
+      <AssemblyReference>UiPath.Studio.Constants</AssemblyReference>
+      <AssemblyReference>System.Activities</AssemblyReference>
+      <AssemblyReference>UiPath.Workflow</AssemblyReference>
+      <AssemblyReference>System.Drawing.Primitives</AssemblyReference>
+      <AssemblyReference>System.Drawing.Common</AssemblyReference>
+      <AssemblyReference>System.Private.ServiceModel</AssemblyReference>
+      <AssemblyReference>System.Private.CoreLib</AssemblyReference>
+      <AssemblyReference>System.Private.DataContractSerialization</AssemblyReference>
+      <AssemblyReference>System.Runtime.Serialization.Formatters</AssemblyReference>
+      <AssemblyReference>System.Runtime.Serialization.Primitives</AssemblyReference>
+      <AssemblyReference>System.Collections</AssemblyReference>
+      <AssemblyReference>System.Collections.NonGeneric</AssemblyReference>
+      <AssemblyReference>UiPath.UIAutomationNext</AssemblyReference>
+      <AssemblyReference>UiPath.UIAutomationCore</AssemblyReference>
+      <AssemblyReference>UiPath.UIAutomationNext.Activities</AssemblyReference>
+      <AssemblyReference>UiPath.Mail.Activities</AssemblyReference>
+      <AssemblyReference>UiPath.OCR.Activities</AssemblyReference>
+      <AssemblyReference>UiPath.Excel.Activities</AssemblyReference>
+      <AssemblyReference>UiPath.Web.Activities</AssemblyReference>
+      <AssemblyReference>UiPath.Platform</AssemblyReference>
+      <AssemblyReference>NPOI</AssemblyReference>
+      <AssemblyReference>UiPath.Excel.Activities.Design</AssemblyReference>
+      <AssemblyReference>System.Memory.Data</AssemblyReference>
+      <AssemblyReference>System.Console</AssemblyReference>
+      <AssemblyReference>System.Security.Permissions</AssemblyReference>
+      <AssemblyReference>System.Configuration.ConfigurationManager</AssemblyReference>
+      <AssemblyReference>System.ComponentModel</AssemblyReference>
+      <AssemblyReference>System.Memory</AssemblyReference>
+      <AssemblyReference>System.Private.Uri</AssemblyReference>
+      <AssemblyReference>System.Linq.Async</AssemblyReference>
+      <AssemblyReference>System.Linq.Expressions</AssemblyReference>
+      <AssemblyReference>PresentationFramework</AssemblyReference>
+      <AssemblyReference>WindowsBase</AssemblyReference>
+      <AssemblyReference>System.ComponentModel.EventBasedAsync</AssemblyReference>
+      <AssemblyReference>System.ComponentModel.Primitives</AssemblyReference>
+      <AssemblyReference>System.Private.Xml</AssemblyReference>
     </scg:List>
   </TextExpression.ReferencesForImplementation>
-
-  <Sequence DisplayName="Scrape_Reviews - 올리브영 라이브 수집 (PRD §5.4)" sap2010:Annotation.AnnotationText="라이브 스크래핑만(fallback 없음). 올리브영 메인 HTTP 403 → 브라우저 자동화 필수. 모든 셀렉터는 PLACEHOLDER, Windows Studio서 Indicate로 재캡처할 것. 차단 위험은 Retry 3회(§9.7)로만 방어.">
+  <Sequence sap2010:Annotation.AnnotationText="⚠️ STUDIO-TODO(Indicate 필요): 4컬럼 스키마(review_id,text,rating,review_date)와 제어 흐름만 build-clean 상태로 제공. 라이브 브라우저 캡처는 헤드리스 환경서 불가하여 UIA 활동 미포함. Windows Studio서 추가: 1) Use Application/Browser(NApplicationCard)로 in_GoodsUrl(Chrome) 열기-Indicate. 2) 리뷰 탭 Click(참고 XPath //*[@id='reviewInfo']/a). 3) Data Scraping 마법사로 #gdasList&gt;li 리뷰 20건 → out_dtReviews(텍스트 .review_cont .txt / 별점 .review_point .point / 작성일 .review_info .date, review_id=R001~). 4) 페이지네이션 #gdasContentsArea .pageing a. 5) RetryScope 3회(§9.7). (docs/scraping_target.md)" DisplayName="Scrape_Reviews - 올리브영 라이브 수집 (PRD §5.4)" sap:VirtualizedContainerService.HintSize="1391,951" sap2010:WorkflowViewState.IdRef="Sequence_1">
     <Sequence.Variables>
-      <Variable x:TypeArguments="x:Int32" Name="intRetry" Default="0" />
-      <Variable x:TypeArguments="x:Boolean" Name="boolOk" Default="False" />
+      <Variable x:TypeArguments="sd:DataTable" Name="dtExtracted" />
+      <Variable x:TypeArguments="x:Int32" Default="0" Name="intIdx" />
     </Sequence.Variables>
-
-    <!-- 결과 DataTable 12입력컬럼이 아닌 수집 4컬럼 스키마: review_id,text,rating,review_date -->
-    <ui:BuildDataTable DisplayName="Build dtReviews (review_id,text,rating,review_date)" TableName="dtReviews" DataTable="[out_dtReviews]"
-      sap2010:Annotation.AnnotationText="컬럼: review_id(String), text(String), rating(Int32), review_date(String). 빌더 마법사로 컬럼 재확인.">
-      <ui:BuildDataTable.DataTableInput>&lt;?xml version="1.0" encoding="utf-16"?&gt;&lt;DataTable&gt;PLACEHOLDER - Studio BuildDataTable 마법사로 4컬럼 정의&lt;/DataTable&gt;</ui:BuildDataTable.DataTableInput>
-    </ui:BuildDataTable>
-
-    <!-- §9.7 Retry 3회: SelectorNotFound / 로딩>5s / "차단되었습니다" 감지 -->
-    <ui:RetryScope DisplayName="Retry 3회 (§9.7 차단 대응)" NumberOfRetries="3" RetryInterval="[New TimeSpan(0,0,3)]">
-      <ui:RetryScope.Body>
-        <Sequence DisplayName="수집 Body">
-          <!-- 브라우저 오픈 (헤드리스 해제 = 사람처럼) -->
-          <ui:NApplicationCard DisplayName="Open Browser - in_GoodsUrl"
-            sap2010:Annotation.AnnotationText="URL = in_GoodsUrl. 브라우저: Chrome. 페이지 간 대기 1.5→3s. User-Agent 변경 옵션 고려.">
-            <Sequence DisplayName="브라우저 내 동작">
-              <!-- 리뷰 탭 클릭: XPath //*[@id='reviewInfo']/a -->
-              <ui:NClick DisplayName="Click 리뷰 탭 (PLACEHOLDER selector)"
-                sap2010:Annotation.AnnotationText="참고 셀렉터 XPath: //*[@id='reviewInfo']/a — Studio Indicate로 재캡처." />
-
-              <ui:Delay DisplayName="Delay 3s (로딩 대기)" Duration="[New TimeSpan(0,0,3)]" />
-
-              <!-- 구조화 추출: 리뷰 텍스트/별점/작성일 20건 -->
-              <ui:ExtractData DisplayName="Extract Structured Data - 리뷰 20건 (PLACEHOLDER)"
-                DataTable="[out_dtReviews]"
-                ExtractMetadata="&lt;extract&gt;&lt;column name='text' exact='1' /&gt;&lt;column name='rating' attr='style' /&gt;&lt;column name='review_date' exact='1' /&gt;PLACEHOLDER - #gdasList&gt;li / .review_cont .txt / .review_point .point / .review_info .date&lt;/extract&gt;"
-                sap2010:Annotation.AnnotationText="컨테이너 #gdasContentsArea #gdasList, 개별 #gdasList&gt;li. 별점은 .review_point .point 또는 .grade_img width%. 최대 20건. 페이지네이션 #gdasContentsArea .pageing a. Studio Data Scraping 마법사로 ExtractMetadata 재생성 필수." />
-            </Sequence>
-          </ui:NApplicationCard>
-
-          <!-- 수집 검증: 건수/빈텍스트/중복 → 실패 시 throw로 Retry 유발 -->
-          <If Condition="[out_dtReviews Is Nothing OrElse out_dtReviews.Rows.Count = 0]" DisplayName="If 수집 0건 → 재시도">
-            <If.Then>
-              <Throw DisplayName="Throw 수집 실패">
-                <Throw.Exception>
-                  <InArgument x:TypeArguments="s:Exception" xmlns:s="clr-namespace:System;assembly=mscorlib">[New Exception("수집 0건 - 차단 의심 또는 셀렉터 불일치")]</InArgument>
-                </Throw.Exception>
-              </Throw>
-            </If.Then>
-            <If.Else>
-              <Assign DisplayName="boolOk = True">
-                <Assign.To>
-                  <OutArgument x:TypeArguments="x:Boolean">[boolOk]</OutArgument>
-                </Assign.To>
-                <Assign.Value>
-                  <InArgument x:TypeArguments="x:Boolean">True</InArgument>
-                </Assign.Value>
-              </Assign>
-            </If.Else>
-          </If>
-        </Sequence>
-      </ui:RetryScope.Body>
-      <ui:RetryScope.Condition>
-        <ActivityAction>
+    <sap:WorkflowViewStateService.ViewState>
+      <scg:Dictionary x:TypeArguments="x:String, x:Object">
+        <x:Boolean x:Key="IsExpanded">True</x:Boolean>
+      </scg:Dictionary>
+    </sap:WorkflowViewStateService.ViewState>
+    <ui:BuildDataTable DataTable="[out_dtReviews]" DisplayName="Build dtReviews (review_id,text,rating,review_date)" sap:VirtualizedContainerService.HintSize="484,92" sap2010:WorkflowViewState.IdRef="BuildDataTable_1" TableInfo="&lt;NewDataSet&gt;&lt;xs:schema id=&quot;NewDataSet&quot; xmlns=&quot;&quot; xmlns:xs=&quot;http://www.w3.org/2001/XMLSchema&quot; xmlns:msdata=&quot;urn:schemas-microsoft-com:xml-msdata&quot;&gt;&lt;xs:element name=&quot;NewDataSet&quot; msdata:IsDataSet=&quot;true&quot; msdata:MainDataTable=&quot;TableName&quot; msdata:UseCurrentLocale=&quot;true&quot;&gt;&lt;xs:complexType&gt;&lt;xs:choice minOccurs=&quot;0&quot; maxOccurs=&quot;unbounded&quot;&gt;&lt;xs:element name=&quot;TableName&quot;&gt;&lt;xs:complexType&gt;&lt;xs:sequence&gt;&lt;xs:element name=&quot;review_id&quot; type=&quot;xs:string&quot; minOccurs=&quot;0&quot; /&gt;&lt;xs:element name=&quot;text&quot; type=&quot;xs:string&quot; minOccurs=&quot;0&quot; /&gt;&lt;xs:element name=&quot;rating&quot; type=&quot;xs:string&quot; minOccurs=&quot;0&quot; /&gt;&lt;xs:element name=&quot;review_date&quot; type=&quot;xs:string&quot; minOccurs=&quot;0&quot; /&gt;&lt;/xs:sequence&gt;&lt;/xs:complexType&gt;&lt;/xs:element&gt;&lt;/xs:choice&gt;&lt;/xs:complexType&gt;&lt;/xs:element&gt;&lt;/xs:schema&gt;&lt;/NewDataSet&gt;" />
+    <uix:NApplicationCard AttachMode="ByInstance" DisplayName="Use Browser Chrome: 벨먼 내추럴 스파 고보습 크리미 바닐라 머스크 스크럽워시 400ml | 올리브영" sap:VirtualizedContainerService.HintSize="484,495" sap2010:WorkflowViewState.IdRef="NApplicationCard_2" InteractionMode="DebuggerApi" ScopeGuid="21e9af29-5735-4752-9cf4-0caebbc0a1b6" Version="V2">
+      <uix:NApplicationCard.Body>
+        <ActivityAction x:TypeArguments="x:Object">
           <ActivityAction.Argument>
-            <DelegateInArgument x:TypeArguments="x:Object" Name="ConditionArg" />
+            <DelegateInArgument x:TypeArguments="x:Object" Name="WSSessionData" />
           </ActivityAction.Argument>
-          <If Condition="[boolOk]" DisplayName="조건: 성공 시 재시도 중단" />
+          <Sequence DisplayName="실행" sap:VirtualizedContainerService.HintSize="450,245" sap2010:WorkflowViewState.IdRef="Sequence_3">
+            <sap:WorkflowViewStateService.ViewState>
+              <scg:Dictionary x:TypeArguments="x:String, x:Object">
+                <x:Boolean x:Key="IsExpanded">True</x:Boolean>
+              </scg:Dictionary>
+            </sap:WorkflowViewStateService.ViewState>
+            <uix:NExtractData AppendResults="False" ContinueOnError="True" DataTable="[dtExtracted]" DisplayName="Extract Table Data" ExtractDataSettings="&lt;Table xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance' xmlns:xsd='http://www.w3.org/2001/XMLSchema' Type='Structured' AddCvHeader='true' IsScrollEnabled='false'&gt;&#xD;&#xA;&#x9;&lt;Column xsi:type='DataColumn' ReferenceName='Column0' Name='text'&gt;&#xD;&#xA;&#x9;&#x9;&lt;IsValidName&gt;true&lt;/IsValidName&gt;&#xD;&#xA;&#x9;&#x9;&lt;ValidationErrorMessage /&gt;&#xD;&#xA;&#x9;&#x9;&lt;IsExtra&gt;false&lt;/IsExtra&gt;&#xD;&#xA;&#x9;&#x9;&lt;CanExtractSimilar&gt;false&lt;/CanExtractSimilar&gt;&#xD;&#xA;&#x9;&#x9;&lt;Format xsi:type='TextColumnFormat' /&gt;&#xD;&#xA;&#x9;&lt;/Column&gt;&#xD;&#xA;&lt;/Table&gt;" ExtractMetadata="&lt;extract&gt;&lt;column exact='1' name='Column0' attr='fulltext'&gt;&lt;webctrl tag='p' idx='1' /&gt;&lt;/column&gt;&lt;/extract&gt;" sap:VirtualizedContainerService.HintSize="416,183" sap2010:WorkflowViewState.IdRef="NExtractData_1" LimitExtractionTo="None" MaximumResults="0" ScopeIdentifier="21e9af29-5735-4752-9cf4-0caebbc0a1b6" Version="V3">
+              <uix:NExtractData.Target>
+                <uix:TargetAnchorable DesignTimeRectangle="464, 461, 614, 20" DesignTimeScaleFactor="1" FriendlyName="'향이 좋긴한데'" FullSelectorArgument="&lt;webctrl tag='OY-REVIEW-REVIEW-IN-PRODUCT' /&gt;&lt;webctrl shadowhostid='' tag='OY-REVIEW-REVIEW-LIST' /&gt;&lt;webctrl shadowhostid='' tag='OY-REVIEW-REVIEW-ITEM' /&gt;&lt;webctrl shadowhostid='' tag='OY-REVIEW-REVIEW-CONTENT' /&gt;&lt;webctrl class='content' shadowhostid='' tag='DIV' /&gt;" Guid="13d7e927-b5f6-4bf8-aeec-48a58a4d9c26" InformativeScreenshot="0ff109c4656a5f33456da483f9077b48.png" ScopeSelectorArgument="&lt;html app='chrome.exe' title='벨먼 내추럴 스파 고보습 크리미 바닐라 머스크 스크럽워시 400ml | 올리브영' /&gt;" SearchSteps="Selector" Version="V2" Visibility="Interactive" />
+              </uix:NExtractData.Target>
+            </uix:NExtractData>
+          </Sequence>
         </ActivityAction>
-      </ui:RetryScope.Condition>
-    </ui:RetryScope>
-
-    <ui:LogMessage DisplayName="Log 수집 결과" Level="Info" Message="[&quot;수집 완료: &quot; &amp; out_dtReviews.Rows.Count.ToString() &amp; &quot;건&quot;]" />
+      </uix:NApplicationCard.Body>
+      <uix:NApplicationCard.TargetApp>
+        <uix:TargetApp Area="-8, -8, 1936, 1048" BrowserType="Chrome" IconBase64="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" sap2010:WorkflowViewState.IdRef="TargetApp_1" InformativeScreenshot="6f1f729178b5d1df817acdb2d5a39dce.jpg" Selector="&lt;html app='chrome.exe' title='벨먼 내추럴 스파 고보습 크리미 바닐라 머스크 스크럽워시 400ml | 올리브영' /&gt;" Title="벨먼 내추럴 스파 고보습 크리미 바닐라 머스크 스크럽워시 400ml | 올리브영" Url="[in_GoodsUrl]" />
+      </uix:NApplicationCard.TargetApp>
+    </uix:NApplicationCard>
+    <If Condition="[dtExtracted IsNot Nothing]" DisplayName="If 추출 성공 → out_dtReviews 채우기" sap2010:WorkflowViewState.IdRef="If_1">
+      <If.Then>
+        <ui:ForEach x:TypeArguments="sd:DataRow" CurrentIndex="{x:Null}" DisplayName="For Each 추출행 → out_dtReviews" sap2010:WorkflowViewState.IdRef="ForEach`1_1" Values="[dtExtracted.Rows]">
+          <ui:ForEach.Body>
+            <ActivityAction x:TypeArguments="sd:DataRow">
+              <ActivityAction.Argument>
+                <DelegateInArgument x:TypeArguments="sd:DataRow" Name="CurrentRow" />
+              </ActivityAction.Argument>
+              <Sequence DisplayName="Add review row">
+                <ui:AddDataRow DataRow="{x:Null}" ArrayRow="[New Object(){&quot;R&quot; &amp; (intIdx + 1).ToString(&quot;000&quot;), CurrentRow(&quot;text&quot;).ToString, &quot;&quot;, &quot;&quot;}]" DataTable="[out_dtReviews]" DisplayName="Add Data Row (review_id,text)" sap2010:WorkflowViewState.IdRef="AddDataRow_1" />
+                <Assign DisplayName="intIdx += 1" sap2010:WorkflowViewState.IdRef="Assign_1">
+                  <Assign.To>
+                    <OutArgument x:TypeArguments="x:Int32">[intIdx]</OutArgument>
+                  </Assign.To>
+                  <Assign.Value>
+                    <InArgument x:TypeArguments="x:Int32">[intIdx + 1]</InArgument>
+                  </Assign.Value>
+                </Assign>
+              </Sequence>
+            </ActivityAction>
+          </ui:ForEach.Body>
+        </ui:ForEach>
+      </If.Then>
+    </If>
+    <ui:LogMessage DisplayName="Log 수집 결과" sap:VirtualizedContainerService.HintSize="484,166" sap2010:WorkflowViewState.IdRef="LogMessage_2" Level="Info" Message="[&quot;수집 완료: &quot; &amp; out_dtReviews.Rows.Count.ToString() &amp; &quot;건 (UIA 미구성 시 0건)&quot;]" />
   </Sequence>
 </Activity>
