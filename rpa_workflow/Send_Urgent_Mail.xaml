@@ -29,12 +29,13 @@
       <AssemblyReference>UiPath.UiAutomation.Activities</AssemblyReference>
     </scg:List>
   </TextExpression.ReferencesForImplementation>
-  <Sequence sap2010:Annotation.AnnotationText="제품결함 필터 → 긴급_품질결함_리포트_*.xlsx → Outlook 메일 3회 재시도. Outlook 실발송은 Windows 전용." DisplayName="Send_Urgent_Mail - 긴급 품질결함 메일 (PRD §5.6)" sap:VirtualizedContainerService.HintSize="1391,2263" sap2010:WorkflowViewState.IdRef="Sequence_3">
+  <Sequence sap2010:Annotation.AnnotationText="제품결함 필터 → 긴급_품질결함_리포트_*.xlsx → Gmail SMTP 메일 3회 재시도. 앱 비밀번호는 환경변수 GMAIL_APP_PASSWORD." DisplayName="Send_Urgent_Mail - 긴급 품질결함 메일 (PRD §5.6)" sap:VirtualizedContainerService.HintSize="1391,2263" sap2010:WorkflowViewState.IdRef="Sequence_3">
     <Sequence.Variables>
       <Variable x:TypeArguments="sd:DataTable" Name="dtDefects" />
       <Variable x:TypeArguments="x:String" Name="strReportPath" />
       <Variable x:TypeArguments="x:String" Name="strSubject" />
       <Variable x:TypeArguments="x:String" Name="strBody" />
+      <Variable x:TypeArguments="x:String" Name="strAppPassword" />
     </Sequence.Variables>
     <sap:WorkflowViewStateService.ViewState>
       <scg:Dictionary x:TypeArguments="x:String, x:Object">
@@ -96,29 +97,44 @@
         <InArgument x:TypeArguments="x:String">["AI 리뷰 분석에서 제품결함 " &amp; dtDefects.Rows.Count.ToString() &amp; "건이 탐지되었습니다. 첨부된 긴급 품질결함 리포트를 확인하세요. (배치: " &amp; in_BatchId &amp; ")"]</InArgument>
       </Assign.Value>
     </Assign>
-    <ui:RetryScope DisplayName="Retry 3회 (메일 발송)" sap:VirtualizedContainerService.HintSize="492,440" sap2010:WorkflowViewState.IdRef="RetryScope_1" NumberOfRetries="3" RetryInterval="00:00:05">
-      <ui:RetryScope.ActivityBody>
-        <ActivityAction>
-          <Sequence DisplayName="메일 발송" sap:VirtualizedContainerService.HintSize="450,231" sap2010:WorkflowViewState.IdRef="Sequence_2">
-            <sap:WorkflowViewStateService.ViewState>
-              <scg:Dictionary x:TypeArguments="x:String, x:Object">
-                <x:Boolean x:Key="IsExpanded">True</x:Boolean>
-              </scg:Dictionary>
-            </sap:WorkflowViewStateService.ViewState>
-            <ui:SendOutlookMail Bcc="{x:Null}" Cc="{x:Null}" ContinueOnError="{x:Null}" MailMessage="{x:Null}" ReplyTo="{x:Null}" TimeoutMS="{x:Null}" Account="a01039261344@gmail.com" Body="[strBody]" DisplayName="Send Outlook Mail" sap:VirtualizedContainerService.HintSize="416,171" sap2010:WorkflowViewState.IdRef="SendOutlookMail_1" Importance="Normal" IsBodyHtml="False" IsDraft="False" Sensitivity="Normal" Subject="[strSubject]" To="kosunje1344@outlook.kr">
-              <ui:SendOutlookMail.Files>
-                <scg:List x:TypeArguments="InArgument(x:String)" Capacity="1">
-                  <InArgument x:TypeArguments="x:String">[strReportPath]</InArgument>
-                </scg:List>
-              </ui:SendOutlookMail.Files>
-            </ui:SendOutlookMail>
-          </Sequence>
-        </ActivityAction>
-      </ui:RetryScope.ActivityBody>
-      <ui:RetryScope.Condition>
-        <ActivityFunc x:TypeArguments="x:Boolean" />
-      </ui:RetryScope.Condition>
-    </ui:RetryScope>
-    <ui:LogMessage DisplayName="Log 메일 발송" sap:VirtualizedContainerService.HintSize="492,166" sap2010:WorkflowViewState.IdRef="LogMessage_1" Level="Info" Message="[&quot;긴급 메일 발송: &quot; &amp; strSubject]" />
+    <Assign DisplayName="앱 비밀번호 = 환경변수 GMAIL_APP_PASSWORD" sap:VirtualizedContainerService.HintSize="492,175" sap2010:WorkflowViewState.IdRef="Assign_5">
+      <Assign.To>
+        <OutArgument x:TypeArguments="x:String">[strAppPassword]</OutArgument>
+      </Assign.To>
+      <Assign.Value>
+        <InArgument x:TypeArguments="x:String">[Environment.GetEnvironmentVariable("GMAIL_APP_PASSWORD")]</InArgument>
+      </Assign.Value>
+    </Assign>
+    <If Condition="[String.IsNullOrEmpty(strAppPassword)]" DisplayName="If 앱 비밀번호 미설정 → 발송 스킵" sap:VirtualizedContainerService.HintSize="492,440" sap2010:WorkflowViewState.IdRef="If_2">
+      <If.Then>
+        <ui:LogMessage DisplayName="Log 앱비밀번호 미설정 경고" sap:VirtualizedContainerService.HintSize="416,107" sap2010:WorkflowViewState.IdRef="LogMessage_2" Level="Warn" Message="[&quot;GMAIL_APP_PASSWORD 환경변수 미설정 - 긴급 메일 발송 스킵. setx GMAIL_APP_PASSWORD &lt;앱비밀번호&gt; 후 재실행하세요.&quot;]" />
+      </If.Then>
+      <If.Else>
+        <ui:RetryScope DisplayName="Retry 3회 (SMTP 메일 발송)" sap:VirtualizedContainerService.HintSize="450,400" sap2010:WorkflowViewState.IdRef="RetryScope_1" NumberOfRetries="3" RetryInterval="00:00:05">
+          <ui:RetryScope.ActivityBody>
+            <ActivityAction>
+              <Sequence DisplayName="메일 발송" sap:VirtualizedContainerService.HintSize="450,231" sap2010:WorkflowViewState.IdRef="Sequence_2">
+                <sap:WorkflowViewStateService.ViewState>
+                  <scg:Dictionary x:TypeArguments="x:String, x:Object">
+                    <x:Boolean x:Key="IsExpanded">True</x:Boolean>
+                  </scg:Dictionary>
+                </sap:WorkflowViewStateService.ViewState>
+                <ui:SendMail Bcc="{x:Null}" Cc="{x:Null}" ContinueOnError="{x:Null}" From="{x:Null}" MailMessage="{x:Null}" Name="{x:Null}" ReplyTo="{x:Null}" Result="{x:Null}" SecurePassword="{x:Null}" TimeoutMS="{x:Null}" UseOAuth="{x:Null}" Body="[strBody]" DisplayName="Send SMTP Mail (Gmail)" Email="a01039261344@gmail.com" EnableSSL="True" IgnoreCRL="False" IsBodyHtml="False" Password="[strAppPassword]" Port="587" sap:VirtualizedContainerService.HintSize="416,171" sap2010:WorkflowViewState.IdRef="SendMail_1" SecureConnection="Auto" Server="smtp.gmail.com" Subject="[strSubject]" To="a01039261344@gmail.com">
+                  <ui:SendMail.Files>
+                    <scg:List x:TypeArguments="InArgument(x:String)" Capacity="1">
+                      <InArgument x:TypeArguments="x:String">[strReportPath]</InArgument>
+                    </scg:List>
+                  </ui:SendMail.Files>
+                </ui:SendMail>
+              </Sequence>
+            </ActivityAction>
+          </ui:RetryScope.ActivityBody>
+          <ui:RetryScope.Condition>
+            <ActivityFunc x:TypeArguments="x:Boolean" />
+          </ui:RetryScope.Condition>
+        </ui:RetryScope>
+      </If.Else>
+    </If>
+    <ui:LogMessage DisplayName="Log 메일 발송" sap:VirtualizedContainerService.HintSize="492,166" sap2010:WorkflowViewState.IdRef="LogMessage_1" Level="Info" Message="[&quot;긴급 메일 처리 완료: &quot; &amp; strSubject]" />
   </Sequence>
 </Activity>

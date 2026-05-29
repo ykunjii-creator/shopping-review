@@ -45,6 +45,8 @@
       <Variable x:TypeArguments="sd:DataTable" Name="dtExisting" />
       <Variable x:TypeArguments="x:String" Name="strRange" />
       <Variable x:TypeArguments="x:Boolean" Default="False" Name="boolLogExists" />
+      <Variable x:TypeArguments="sd:DataTable" Name="dtHeaderProbe" />
+      <Variable x:TypeArguments="x:Boolean" Default="False" Name="boolHeaderValid" />
     </Sequence.Variables>
     <sap:WorkflowViewStateService.ViewState>
       <scg:Dictionary x:TypeArguments="x:String, x:Object">
@@ -90,15 +92,30 @@
       </ui:ForEach.Body>
     </ui:ForEach>
     <ui:PathExists Resource="{x:Null}" DisplayName="Path Exists Master_Log (스코프 전)" Exists="[boolLogExists]" sap2010:WorkflowViewState.IdRef="PathExists_1" Path="[strLogPath]" PathType="File" />
-    <If Condition="[boolLogExists]" DisplayName="If 기존 → Append / 신규 → Write (Workbook, Excel 불필요)" sap2010:WorkflowViewState.IdRef="If_1">
+    <If Condition="[boolLogExists]" DisplayName="If 기존 파일 → 헤더 검사 (self-heal)" sap2010:WorkflowViewState.IdRef="If_2">
+      <If.Then>
+        <Sequence DisplayName="헤더 probe" sap2010:WorkflowViewState.IdRef="Sequence_9">
+          <ui:ReadRange AddHeaders="True" DataTable="[dtHeaderProbe]" DisplayName="Read 헤더 probe (Workbook)" sap2010:WorkflowViewState.IdRef="ReadRange_2" Range="" SheetName="Master_Log" WorkbookPath="[strLogPath]" />
+          <Assign DisplayName="boolHeaderValid = 12컬럼 존재 여부" sap2010:WorkflowViewState.IdRef="Assign_4">
+            <Assign.To>
+              <OutArgument x:TypeArguments="x:Boolean">[boolHeaderValid]</OutArgument>
+            </Assign.To>
+            <Assign.Value>
+              <InArgument x:TypeArguments="x:Boolean">[dtHeaderProbe IsNot Nothing AndAlso dtHeaderProbe.Columns.Contains("분석일시") AndAlso dtHeaderProbe.Columns.Contains("리뷰ID") AndAlso dtHeaderProbe.Columns.Contains("원본텍스트") AndAlso dtHeaderProbe.Columns.Contains("별점") AndAlso dtHeaderProbe.Columns.Contains("작성일") AndAlso dtHeaderProbe.Columns.Contains("카테고리") AndAlso dtHeaderProbe.Columns.Contains("요약") AndAlso dtHeaderProbe.Columns.Contains("담당부서") AndAlso dtHeaderProbe.Columns.Contains("담당메일") AndAlso dtHeaderProbe.Columns.Contains("긴급도") AndAlso dtHeaderProbe.Columns.Contains("확신도") AndAlso dtHeaderProbe.Columns.Contains("판단근거")]</InArgument>
+            </Assign.Value>
+          </Assign>
+        </Sequence>
+      </If.Then>
+    </If>
+    <If Condition="[boolLogExists AndAlso boolHeaderValid]" DisplayName="If 헤더정상 → Append / 그외 → Write 재생성 (Workbook, Excel 불필요)" sap2010:WorkflowViewState.IdRef="If_1">
       <If.Then>
         <ui:AppendRange DataTable="[out_dtResults]" DisplayName="Append Master_Log (Workbook)" sap2010:WorkflowViewState.IdRef="AppendRange_1" SheetName="Master_Log" WorkbookPath="[strLogPath]" />
       </If.Then>
       <If.Else>
-        <ui:WriteRange AddHeaders="True" DataTable="[out_dtResults]" DisplayName="Write Master_Log 헤더+데이터 (Workbook)" sap2010:WorkflowViewState.IdRef="WriteRange_1" SheetName="Master_Log" StartingCell="A1" WorkbookPath="[strLogPath]" />
+        <ui:WriteRange AddHeaders="True" DataTable="[out_dtResults]" DisplayName="Write Master_Log 헤더+데이터 재생성 (Workbook)" sap2010:WorkflowViewState.IdRef="WriteRange_1" SheetName="Master_Log" StartingCell="A1" WorkbookPath="[strLogPath]" />
       </If.Else>
     </If>
-    <ui:LogMessage DisplayName="Log 누적" sap2010:WorkflowViewState.IdRef="LogMessage_2" Level="Info" Message="[&quot;Master_Log 누적: &quot; &amp; out_dtResults.Rows.Count.ToString() &amp; &quot;행 (신규=&quot; &amp; (Not boolLogExists).ToString() &amp; &quot;)&quot;]" />
+    <ui:LogMessage DisplayName="Log 누적" sap2010:WorkflowViewState.IdRef="LogMessage_2" Level="Info" Message="[&quot;Master_Log 누적: &quot; &amp; out_dtResults.Rows.Count.ToString() &amp; &quot;행 (헤더재생성=&quot; &amp; (Not (boolLogExists AndAlso boolHeaderValid)).ToString() &amp; &quot;)&quot;]" />
     <ui:LogMessage DisplayName="Log 처리 완료" sap2010:WorkflowViewState.IdRef="LogMessage_3" Level="Info" Message="[&quot;처리 완료: defect=&quot; &amp; out_DefectCount.ToString()]" />
   </Sequence>
 </Activity>
