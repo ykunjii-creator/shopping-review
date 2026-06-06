@@ -14,7 +14,7 @@ from pydantic import BaseModel, Field, field_validator
 from config import MAIN_MODEL, JUDGE_MODEL, SERVER_PORT
 from agent.aggregator import aggregate_analysis
 from agent.core import _unclassified
-from agent.pipeline import analyze_and_verify
+from agent.pipeline import analyze_and_verify_batch
 
 app = FastAPI(title="리뷰 결함 분석 AI 서버", version="2.0")
 
@@ -67,13 +67,13 @@ def analyze_reviews(req: AnalyzeRequest) -> AnalyzeResponse:
     start = time.perf_counter()
     print(f"\n=== 배치 {req.batch_id} 수신: {len(req.reviews)}건 ===", flush=True)
 
-    results: list[dict] = []
-    for r in req.reviews:
-        review = r.model_dump()
-        try:
-            results.append(analyze_and_verify(review))
-        except Exception as e:  # API 에러 등 → 해당 건만 미분류, 배치는 계속 (PRD §6)
-            traceback.print_exc()
+    reviews = [r.model_dump() for r in req.reviews]
+    try:
+        results = analyze_and_verify_batch(reviews)
+    except Exception as e:  # 배치 분석/검증 자체 실패 → 전건 미분류, 응답은 계속 (PRD §6)
+        traceback.print_exc()
+        results = []
+        for review in reviews:
             res = _unclassified(review, f"처리 오류: {e}")
             res["verification"] = {
                 "rule_based": None, "judge_evaluation": None, "final_status": "error",

@@ -1,6 +1,6 @@
 """시나리오 테스트 — 5개 케이스 (역설/별점5+결함/단순불만/긍정/모순).
 
-실제 OpenAI 호출 대신 analyze_review / judge_evaluate를 mock하여
+실제 OpenAI 호출 대신 analyze_batch / judge_batch를 mock하여
 검증 파이프라인(validators + 강등 + final_status) 로직을 키 없이 검증.
 실호출 E2E는 A12(키 확보 후).
 """
@@ -67,15 +67,18 @@ SCENARIOS = {
 
 @pytest.fixture
 def patched(monkeypatch):
-    def fake_analyze(review):
-        return SCENARIOS[review["review_id"]][0]
+    def fake_analyze_batch(reviews):
+        return [SCENARIOS[r["review_id"]][0] for r in reviews]
 
-    def fake_judge(review, result):
-        score = SCENARIOS[review["review_id"]][1]
-        return {"score": score, "passed": score >= 7, "reasoning": "mock"}
+    def fake_judge_batch(reviews, results):
+        out = {}
+        for r in reviews:
+            score = SCENARIOS[r["review_id"]][1]
+            out[r["review_id"]] = {"score": score, "passed": score >= 7, "reasoning": "mock"}
+        return out
 
-    monkeypatch.setattr(pipeline, "analyze_review", fake_analyze)
-    monkeypatch.setattr(pipeline, "judge_evaluate", fake_judge)
+    monkeypatch.setattr(pipeline, "analyze_batch", fake_analyze_batch)
+    monkeypatch.setattr(pipeline, "judge_batch", fake_judge_batch)
 
 
 def _review(rid, text):
@@ -114,6 +117,22 @@ def test_contradiction_downgraded(patched):
     assert out["verification"]["judge_evaluation"] is None
 
 
+def test_batch_order_and_status(patched):
+    reviews = [
+        _review("R_PARADOX", "액정 파손"),
+        _review("R_CONTRA", "만족"),
+        _review("R_POS", "재구매"),
+    ]
+    out = pipeline.analyze_and_verify_batch(reviews)
+    # 입력 순서 유지
+    assert [r["review_id"] for r in out] == ["R_PARADOX", "R_CONTRA", "R_POS"]
+    # R_CONTRA(긍정+high)는 rule fail → judge skip, 나머지는 verified
+    statuses = {r["review_id"]: r["verification"]["final_status"] for r in out}
+    assert statuses["R_PARADOX"] == "verified"
+    assert statuses["R_CONTRA"] == "rule_based_failed"
+    assert statuses["R_POS"] == "verified"
+
+
 def test_aggregate(patched):
     reviews = [
         _review("R_PARADOX", "액정 파손"),
@@ -122,7 +141,7 @@ def test_aggregate(patched):
         _review("R_POS", "만족"),
         _review("R_CONTRA", "만족"),
     ]
-    results = [pipeline.analyze_and_verify(r) for r in reviews]
+    results = pipeline.analyze_and_verify_batch(reviews)
     summary = aggregate_analysis(results)
 
     assert summary["category_distribution"].get("제품결함") == 2

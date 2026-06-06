@@ -1,17 +1,64 @@
-"""Agent 메인 루프 — OpenAI Responses API + function calling.
+"""배치 분석 — OpenAI Responses API + structured output.
 
-tech-spec §3.1. Anthropic Messages 루프를 Responses API로 변환:
-  system= → instructions= / messages → input(resp.output 누적) /
-  tool_use → function_call / tool_result → function_call_output /
-  stop_reason 분기 → output item type 순회.
+리뷰 N건을 1회 호출로 분석해 analyses 배열로 받는다(tech-spec §3.1의 단건 agentic
+루프를 효율화). 부서/메일은 모델이 아니라 Python이 DEPT_MAP으로 결정적으로 채운다.
+web_search·function tool은 미사용(검증 2단계와 무관한 분석 보조 기능 제거).
 """
 from __future__ import annotations
 
 import json
 
-from config import MAIN_MODEL, MAX_ITERATIONS, UNCLASSIFIED, get_client
-from agent.prompts import SYSTEM_PROMPT, build_analysis_input
-from agent.tools import DEPT_MAP, execute_tool, get_tools
+from config import CATEGORIES, MAIN_MODEL, UNCLASSIFIED, get_client
+from agent.prompts import BATCH_SYSTEM_PROMPT, build_batch_analysis_input
+from agent.tools import DEPT_MAP
+
+# 배치 분석 structured output (strict json_schema, analyses 배열)
+_ANALYSIS_BATCH_FORMAT = {
+    "format": {
+        "type": "json_schema",
+        "name": "batch_analysis",
+        "strict": True,
+        "schema": {
+            "type": "object",
+            "properties": {
+                "analyses": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "review_id": {"type": "string"},
+                            "category": {"type": "string", "enum": CATEGORIES},
+                            "summary": {"type": "string"},
+                            "urgency": {"type": "string", "enum": ["high", "medium", "low"]},
+                            "confidence": {"type": "number"},
+                            "reasoning": {"type": "string"},
+                            "self_check_notes": {"type": "string"},
+                            "external_evidence": {"type": "string"},
+                        },
+                        "required": [
+                            "review_id", "category", "summary", "urgency",
+                            "confidence", "reasoning", "self_check_notes", "external_evidence",
+                        ],
+                        "additionalProperties": False,
+                    },
+                }
+            },
+            "required": ["analyses"],
+            "additionalProperties": False,
+        },
+    }
+}
+
+
+def _with_department(analysis: dict, review: dict) -> dict:
+    """모델 출력(부서 제외)에 카테고리별 부서/메일을 결정적으로 주입 + 원본필드 부착."""
+    entry = DEPT_MAP.get(analysis.get("category"), DEPT_MAP[UNCLASSIFIED])
+    return {
+        **analysis,
+        "department": entry["department"],
+        "department_email": entry["department_email"],
+        **_original_fields(review),
+    }
 
 
 def _original_fields(review: dict) -> dict:
@@ -41,38 +88,30 @@ def _unclassified(review: dict, reason: str) -> dict:
     }
 
 
-def analyze_review(review: dict) -> dict:
-    """단일 리뷰 분석. Agent가 web_search/self_check를 자율 결정."""
+def analyze_batch(reviews: list[dict]) -> list[dict]:
+    """리뷰 N건을 1회 호출로 분석. 입력 순서대로 결과 리스트 반환.
+
+    모델 응답을 review_id로 매핑하고, 누락분은 미분류로 채운다. 부서/메일은
+    Python이 카테고리로 결정적으로 주입한다(모델은 카테고리만 판단).
+    """
+    if not reviews:
+        return []
     client = get_client()
-    input_list: list = [{"role": "user", "content": build_analysis_input(review)}]
-    tools = get_tools()
+    resp = client.responses.create(
+        model=MAIN_MODEL,
+        instructions=BATCH_SYSTEM_PROMPT,
+        input=[{"role": "user", "content": build_batch_analysis_input(reviews)}],
+        text=_ANALYSIS_BATCH_FORMAT,
+        reasoning={"effort": "low"},
+    )
+    analyses = json.loads(resp.output_text).get("analyses", [])
+    by_id = {a.get("review_id"): a for a in analyses}
 
-    for _ in range(MAX_ITERATIONS):
-        resp = client.responses.create(
-            model=MAIN_MODEL,
-            instructions=SYSTEM_PROMPT,
-            tools=tools,
-            input=input_list,
-            reasoning={"effort": "low"},
-        )
-        # assistant turn 통째로 누적
-        input_list += resp.output
-
-        final = None
-        for item in resp.output:
-            if getattr(item, "type", None) != "function_call":
-                continue  # web_search(hosted)·reasoning·message 등은 자동 처리
-            args = json.loads(item.arguments)
-            out = execute_tool(item.name, args)
-            input_list.append({
-                "type": "function_call_output",
-                "call_id": item.call_id,
-                "output": out,
-            })
-            if item.name == "submit_analysis":
-                final = args
-
-        if final is not None:
-            return {**final, **_original_fields(review)}
-
-    return _unclassified(review, "MAX_ITERATIONS 초과")
+    out: list[dict] = []
+    for review in reviews:
+        a = by_id.get(review.get("review_id"))
+        if a is None:
+            out.append(_unclassified(review, "분석 누락"))
+        else:
+            out.append(_with_department(a, review))
+    return out
