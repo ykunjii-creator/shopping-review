@@ -85,6 +85,9 @@
       <Variable x:TypeArguments="x:String" Name="strJsCode" />
       <Variable x:TypeArguments="x:String" Name="strScrollJsCode" />
       <Variable x:TypeArguments="x:String" Name="strTopJsCode" />
+      <Variable x:TypeArguments="x:String" Name="strSortJsCode" />
+      <Variable x:TypeArguments="x:String" Name="strSortResult" />
+      <Variable x:TypeArguments="x:Int32" Default="10" Name="intMaxReviews" />
       <Variable x:TypeArguments="x:String" Name="strReviewsJson" />
       <Variable x:TypeArguments="njl:JArray" Name="jarrReviews" />
       <Variable x:TypeArguments="x:String" Name="strScrollResult" />
@@ -105,6 +108,7 @@
     <ui:ReadTextFile Content="[strJsCode]" DisplayName="Read JS 추출 스크립트" sap:VirtualizedContainerService.HintSize="484,92" sap2010:WorkflowViewState.IdRef="ReadTextFile_1" FileName="Scripts\extract_reviews.js" />
     <ui:ReadTextFile Content="[strScrollJsCode]" DisplayName="Read JS 스크롤 스크립트" sap:VirtualizedContainerService.HintSize="484,92" sap2010:WorkflowViewState.IdRef="ReadTextFile_2" FileName="Scripts\scroll_more.js" />
     <ui:ReadTextFile Content="[strTopJsCode]" DisplayName="Read JS 리뷰상단이동 스크립트" sap:VirtualizedContainerService.HintSize="484,92" sap2010:WorkflowViewState.IdRef="ReadTextFile_3" FileName="Scripts\goto_reviews_top.js" />
+    <ui:ReadTextFile Content="[strSortJsCode]" DisplayName="Read JS 정렬(평점 낮은순) 스크립트" sap:VirtualizedContainerService.HintSize="484,92" sap2010:WorkflowViewState.IdRef="ReadTextFile_4" FileName="Scripts\sort_reviews_low.js" />
     <uix:NApplicationCard AttachMode="ByInstance" DisplayName="Use Browser Chrome: 올리브영 상품 리뷰" sap:VirtualizedContainerService.HintSize="484,495" sap2010:WorkflowViewState.IdRef="NApplicationCard_2" InteractionMode="DebuggerApi" ScopeGuid="21e9af29-5735-4752-9cf4-0caebbc0a1b6" Version="V2">
       <uix:NApplicationCard.Body>
         <ActivityAction x:TypeArguments="x:Object">
@@ -117,9 +121,23 @@
                 <x:Boolean x:Key="IsExpanded">True</x:Boolean>
               </scg:Dictionary>
             </sap:WorkflowViewStateService.ViewState>
+            <uix:NInjectJsScript DisplayName="Inject JS - 정렬 평점 낮은순 (1회: 열기/적용)" ExecutionWorld="Page" sap:VirtualizedContainerService.HintSize="416,183" sap2010:WorkflowViewState.IdRef="NInjectJsScript_5" ScopeIdentifier="21e9af29-5735-4752-9cf4-0caebbc0a1b6" ScriptCode="[strSortJsCode]" Version="V2">
+              <uix:NInjectJsScript.ScriptOutput>
+                <OutArgument x:TypeArguments="x:String">[strSortResult]</OutArgument>
+              </uix:NInjectJsScript.ScriptOutput>
+            </uix:NInjectJsScript>
+            <ui:LogMessage DisplayName="Log 정렬 1회 결과" sap:VirtualizedContainerService.HintSize="416,91" sap2010:WorkflowViewState.IdRef="LogMessage_3" Level="Info" Message="[&quot;정렬(낮은순) 1차: &quot; &amp; If(String.IsNullOrEmpty(strSortResult), &quot;(none)&quot;, strSortResult)]" />
+            <Delay Duration="00:00:02" DisplayName="정렬 드롭다운 렌더 대기" sap2010:WorkflowViewState.IdRef="Delay_3" />
+            <uix:NInjectJsScript DisplayName="Inject JS - 정렬 평점 낮은순 (2회: 옵션 선택)" ExecutionWorld="Page" sap:VirtualizedContainerService.HintSize="416,183" sap2010:WorkflowViewState.IdRef="NInjectJsScript_6" ScopeIdentifier="21e9af29-5735-4752-9cf4-0caebbc0a1b6" ScriptCode="[strSortJsCode]" Version="V2">
+              <uix:NInjectJsScript.ScriptOutput>
+                <OutArgument x:TypeArguments="x:String">[strSortResult]</OutArgument>
+              </uix:NInjectJsScript.ScriptOutput>
+            </uix:NInjectJsScript>
+            <ui:LogMessage DisplayName="Log 정렬 2회 결과" sap:VirtualizedContainerService.HintSize="416,91" sap2010:WorkflowViewState.IdRef="LogMessage_4" Level="Info" Message="[&quot;정렬(낮은순) 2차: &quot; &amp; If(String.IsNullOrEmpty(strSortResult), &quot;(none)&quot;, strSortResult)]" />
+            <Delay Duration="00:00:02" DisplayName="정렬 적용 후 재렌더 대기" sap2010:WorkflowViewState.IdRef="Delay_4" />
             <uix:NInjectJsScript DisplayName="Inject JS - 리뷰 리스트 맨 위로 이동" ExecutionWorld="Page" sap:VirtualizedContainerService.HintSize="416,183" sap2010:WorkflowViewState.IdRef="NInjectJsScript_4" ScopeIdentifier="21e9af29-5735-4752-9cf4-0caebbc0a1b6" ScriptCode="[strTopJsCode]" Version="V2" />
             <Delay Duration="00:00:01" DisplayName="상단 이동 후 대기" sap2010:WorkflowViewState.IdRef="Delay_2" />
-            <While Condition="[boolKeepScrolling AndAlso intScroll &lt;= intMaxScrolls]" DisplayName="While 가상스크롤 반복 수집" sap2010:WorkflowViewState.IdRef="While_1">
+            <While Condition="[boolKeepScrolling AndAlso intScroll &lt;= intMaxScrolls AndAlso out_dtReviews.Rows.Count &lt; intMaxReviews]" DisplayName="While 가상스크롤 반복 수집 (최대 intMaxReviews건)" sap2010:WorkflowViewState.IdRef="While_1">
               <Sequence DisplayName="수집 + 스크롤">
                 <uix:NInjectJsScript DisplayName="Inject JS - 현재 렌더된 리뷰 수집 (Shadow DOM)" ExecutionWorld="Page" sap:VirtualizedContainerService.HintSize="416,183" sap2010:WorkflowViewState.IdRef="NInjectJsScript_1" ScopeIdentifier="21e9af29-5735-4752-9cf4-0caebbc0a1b6" ScriptCode="[strJsCode]" Version="V2">
                   <uix:NInjectJsScript.ScriptOutput>
@@ -149,7 +167,7 @@
                             <InArgument x:TypeArguments="x:Boolean">[hsSeen.Add(item("text").ToString)]</InArgument>
                           </Assign.Value>
                         </Assign>
-                        <If Condition="[boolNew]" DisplayName="If 신규 → 행 추가" sap2010:WorkflowViewState.IdRef="If_1">
+                        <If Condition="[boolNew AndAlso out_dtReviews.Rows.Count &lt; intMaxReviews]" DisplayName="If 신규 AndAlso 10건 미만 → 행 추가" sap2010:WorkflowViewState.IdRef="If_1">
                           <If.Then>
                             <Sequence DisplayName="add row">
                               <ui:AddDataRow DataRow="{x:Null}" ArrayRow="[New Object(){&quot;R&quot; &amp; (intIdx + 1).ToString(&quot;000&quot;), item(&quot;text&quot;).ToString, item(&quot;rating&quot;).ToString, item(&quot;review_date&quot;).ToString}]" DataTable="[out_dtReviews]" DisplayName="Add Data Row (review_id,text,rating,review_date)" sap2010:WorkflowViewState.IdRef="AddDataRow_1" />
@@ -236,7 +254,7 @@
                         <InArgument x:TypeArguments="x:Boolean">[hsSeen.Add(item("text").ToString)]</InArgument>
                       </Assign.Value>
                     </Assign>
-                    <If Condition="[boolNew]" DisplayName="If 신규 → 행 추가" sap2010:WorkflowViewState.IdRef="If_2">
+                    <If Condition="[boolNew AndAlso out_dtReviews.Rows.Count &lt; intMaxReviews]" DisplayName="If 신규 AndAlso 10건 미만 → 행 추가" sap2010:WorkflowViewState.IdRef="If_2">
                       <If.Then>
                         <Sequence DisplayName="add row (최종)">
                           <ui:AddDataRow DataRow="{x:Null}" ArrayRow="[New Object(){&quot;R&quot; &amp; (intIdx + 1).ToString(&quot;000&quot;), item(&quot;text&quot;).ToString, item(&quot;rating&quot;).ToString, item(&quot;review_date&quot;).ToString}]" DataTable="[out_dtReviews]" DisplayName="Add Data Row (review_id,text,rating,review_date)" sap2010:WorkflowViewState.IdRef="AddDataRow_2" />
