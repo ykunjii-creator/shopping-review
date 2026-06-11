@@ -15,10 +15,12 @@
       <x:String>System.Linq</x:String>
       <x:String>UiPath.Core</x:String>
       <x:String>UiPath.Core.Activities</x:String>
+      <x:String>System.Linq.Expressions</x:String>
+      <x:String>System.Runtime.Serialization</x:String>
     </scg:List>
   </TextExpression.NamespacesForImplementation>
   <TextExpression.ReferencesForImplementation>
-    <scg:List x:TypeArguments="AssemblyReference" Capacity="10">
+    <scg:List x:TypeArguments="AssemblyReference" Capacity="40">
       <AssemblyReference>System.ComponentModel.TypeConverter</AssemblyReference>
       <AssemblyReference>System.Data</AssemblyReference>
       <AssemblyReference>System.Linq</AssemblyReference>
@@ -27,9 +29,24 @@
       <AssemblyReference>UiPath.Mail.Activities</AssemblyReference>
       <AssemblyReference>UiPath.System.Activities</AssemblyReference>
       <AssemblyReference>UiPath.UiAutomation.Activities</AssemblyReference>
+      <AssemblyReference>System.Memory.Data</AssemblyReference>
+      <AssemblyReference>NPOI</AssemblyReference>
+      <AssemblyReference>UiPath.Excel.Activities.Design</AssemblyReference>
+      <AssemblyReference>System.Console</AssemblyReference>
+      <AssemblyReference>System.Security.Permissions</AssemblyReference>
+      <AssemblyReference>System.Private.CoreLib</AssemblyReference>
+      <AssemblyReference>System.Configuration.ConfigurationManager</AssemblyReference>
+      <AssemblyReference>System.ComponentModel</AssemblyReference>
+      <AssemblyReference>System.Memory</AssemblyReference>
+      <AssemblyReference>System.Private.Uri</AssemblyReference>
+      <AssemblyReference>System.Linq.Expressions</AssemblyReference>
+      <AssemblyReference>System.Private.ServiceModel</AssemblyReference>
+      <AssemblyReference>System.Private.DataContractSerialization</AssemblyReference>
+      <AssemblyReference>System.Runtime.Serialization.Formatters</AssemblyReference>
+      <AssemblyReference>System.Runtime.Serialization.Primitives</AssemblyReference>
     </scg:List>
   </TextExpression.ReferencesForImplementation>
-  <Sequence sap2010:Annotation.AnnotationText="제품결함 필터 → 긴급_품질결함_리포트_*.xlsx → Gmail SMTP 메일 3회 재시도. 앱 비밀번호는 환경변수 GMAIL_APP_PASSWORD." DisplayName="Send_Urgent_Mail - 긴급 품질결함 메일 (PRD §5.6)" sap:VirtualizedContainerService.HintSize="1391,2263" sap2010:WorkflowViewState.IdRef="Sequence_3">
+  <Sequence sap2010:Annotation.AnnotationText="제품결함 필터 → 긴급_품질결함_리포트_*.xlsx → Gmail SMTP 메일 3회 재시도. 앱 비밀번호는 환경변수 GMAIL_APP_PASSWORD." DisplayName="Send_Urgent_Mail - 긴급 품질결함 메일 (PRD §5.6)" sap:VirtualizedContainerService.HintSize="520,2754.6666666666665" sap2010:WorkflowViewState.IdRef="Sequence_3">
     <Sequence.Variables>
       <Variable x:TypeArguments="sd:DataTable" Name="dtDefects" />
       <Variable x:TypeArguments="x:String" Name="strReportPath" />
@@ -42,7 +59,7 @@
         <x:Boolean x:Key="IsExpanded">True</x:Boolean>
       </scg:Dictionary>
     </sap:WorkflowViewStateService.ViewState>
-    <Assign DisplayName="dtDefects = in_dtResults.Clone()" sap:VirtualizedContainerService.HintSize="492,175" sap2010:WorkflowViewState.IdRef="Assign_1">
+    <Assign DisplayName="dtDefects = in_dtResults.Clone()" sap:VirtualizedContainerService.HintSize="494,176.66666666666666" sap2010:WorkflowViewState.IdRef="Assign_1">
       <Assign.To>
         <OutArgument x:TypeArguments="sd:DataTable">[dtDefects]</OutArgument>
       </Assign.To>
@@ -50,28 +67,28 @@
         <InArgument x:TypeArguments="sd:DataTable">[in_dtResults.Clone()]</InArgument>
       </Assign.Value>
     </Assign>
-    <ui:ForEach x:TypeArguments="sd:DataRow" CurrentIndex="{x:Null}" DisplayName="For Each Row → 제품결함 수집" sap:VirtualizedContainerService.HintSize="492,673" sap2010:WorkflowViewState.IdRef="ForEach`1_1" Values="[in_dtResults.Rows]">
+    <ui:ForEach x:TypeArguments="sd:DataRow" CurrentIndex="{x:Null}" DisplayName="For Each Row → 제품결함 수집" sap:VirtualizedContainerService.HintSize="494,678.6666666666666" sap2010:WorkflowViewState.IdRef="ForEach`1_1" Values="[in_dtResults.Rows]">
       <ui:ForEach.Body>
         <ActivityAction x:TypeArguments="sd:DataRow">
           <ActivityAction.Argument>
             <DelegateInArgument x:TypeArguments="sd:DataRow" Name="CurrentRow" />
           </ActivityAction.Argument>
-          <Sequence DisplayName="Body" sap:VirtualizedContainerService.HintSize="486,491" sap2010:WorkflowViewState.IdRef="Sequence_1">
+          <Sequence DisplayName="Body" sap:VirtualizedContainerService.HintSize="486,494.6666666666667" sap2010:WorkflowViewState.IdRef="Sequence_1">
             <sap:WorkflowViewStateService.ViewState>
               <scg:Dictionary x:TypeArguments="x:String, x:Object">
                 <x:Boolean x:Key="IsExpanded">True</x:Boolean>
               </scg:Dictionary>
             </sap:WorkflowViewStateService.ViewState>
-            <If Condition="[CurrentRow(&quot;카테고리&quot;).ToString = &quot;제품결함&quot;]" DisplayName="If 제품결함" sap:VirtualizedContainerService.HintSize="452,431" sap2010:WorkflowViewState.IdRef="If_1">
+            <If Condition="[CurrentRow(&quot;카테고리&quot;).ToString = &quot;제품결함&quot;]" DisplayName="If 제품결함" sap:VirtualizedContainerService.HintSize="452,434.6666666666667" sap2010:WorkflowViewState.IdRef="If_1">
               <If.Then>
-                <ui:AddDataRow DataRow="{x:Null}" ArrayRow="[CurrentRow.ItemArray]" DataTable="[dtDefects]" DisplayName="Add 결함 행" sap:VirtualizedContainerService.HintSize="450,189" sap2010:WorkflowViewState.IdRef="AddDataRow_1" />
+                <ui:AddDataRow DataRow="{x:Null}" ArrayRow="[CurrentRow.ItemArray]" DataTable="[dtDefects]" DisplayName="Add 결함 행" sap:VirtualizedContainerService.HintSize="450,191.33333333333334" sap2010:WorkflowViewState.IdRef="AddDataRow_1" />
               </If.Then>
             </If>
           </Sequence>
         </ActivityAction>
       </ui:ForEach.Body>
     </ui:ForEach>
-    <Assign DisplayName="리포트 경로" sap:VirtualizedContainerService.HintSize="492,175" sap2010:WorkflowViewState.IdRef="Assign_2">
+    <Assign DisplayName="리포트 경로" sap:VirtualizedContainerService.HintSize="494,176.66666666666666" sap2010:WorkflowViewState.IdRef="Assign_2">
       <Assign.To>
         <OutArgument x:TypeArguments="x:String">[strReportPath]</OutArgument>
       </Assign.To>
@@ -79,9 +96,9 @@
         <InArgument x:TypeArguments="x:String">["Data\Reports\긴급_품질결함_리포트_" &amp; DateTime.Now.ToString("yyyyMMdd_HHmmss") &amp; ".xlsx"]</InArgument>
       </Assign.Value>
     </Assign>
-    <ui:CreateDirectory ContinueOnError="{x:Null}" Output="{x:Null}" DisplayName="Create Data\Reports" sap:VirtualizedContainerService.HintSize="492,113" sap2010:WorkflowViewState.IdRef="CreateDirectory_1" Path="Data\Reports" />
-    <ui:WriteRange AddHeaders="True" DataTable="[dtDefects]" DisplayName="Write 제품결함 리포트" sap:VirtualizedContainerService.HintSize="492,148" sap2010:WorkflowViewState.IdRef="WriteRange_1" SheetName="제품결함" StartingCell="A1" WorkbookPath="[strReportPath]" />
-    <Assign DisplayName="제목" sap:VirtualizedContainerService.HintSize="492,175" sap2010:WorkflowViewState.IdRef="Assign_3">
+    <ui:CreateDirectory ContinueOnError="{x:Null}" Output="{x:Null}" DisplayName="Create Data\Reports" sap:VirtualizedContainerService.HintSize="494,114" sap2010:WorkflowViewState.IdRef="CreateDirectory_1" Path="Data\Reports" />
+    <ui:WriteRange AddHeaders="True" DataTable="[dtDefects]" DisplayName="Write 제품결함 리포트" sap:VirtualizedContainerService.HintSize="494,148" sap2010:WorkflowViewState.IdRef="WriteRange_1" SheetName="제품결함" StartingCell="A1" WorkbookPath="[strReportPath]" />
+    <Assign DisplayName="제목" sap:VirtualizedContainerService.HintSize="494,176.66666666666666" sap2010:WorkflowViewState.IdRef="Assign_3">
       <Assign.To>
         <OutArgument x:TypeArguments="x:String">[strSubject]</OutArgument>
       </Assign.To>
@@ -89,7 +106,7 @@
         <InArgument x:TypeArguments="x:String">["[긴급] 제품결함 " &amp; dtDefects.Rows.Count.ToString() &amp; "건 탐지 - batch " &amp; in_BatchId]</InArgument>
       </Assign.Value>
     </Assign>
-    <Assign DisplayName="본문" sap:VirtualizedContainerService.HintSize="492,175" sap2010:WorkflowViewState.IdRef="Assign_4">
+    <Assign DisplayName="본문" sap:VirtualizedContainerService.HintSize="494,176.66666666666666" sap2010:WorkflowViewState.IdRef="Assign_4">
       <Assign.To>
         <OutArgument x:TypeArguments="x:String">[strBody]</OutArgument>
       </Assign.To>
@@ -97,7 +114,7 @@
         <InArgument x:TypeArguments="x:String">["AI 리뷰 분석에서 제품결함 " &amp; dtDefects.Rows.Count.ToString() &amp; "건이 탐지되었습니다. 첨부된 긴급 품질결함 리포트를 확인하세요. (배치: " &amp; in_BatchId &amp; ")"]</InArgument>
       </Assign.Value>
     </Assign>
-    <Assign DisplayName="앱 비밀번호 = 환경변수 GMAIL_APP_PASSWORD" sap:VirtualizedContainerService.HintSize="492,175" sap2010:WorkflowViewState.IdRef="Assign_5">
+    <Assign DisplayName="앱 비밀번호 = 환경변수 GMAIL_APP_PASSWORD" sap:VirtualizedContainerService.HintSize="494,176.66666666666666" sap2010:WorkflowViewState.IdRef="Assign_5">
       <Assign.To>
         <OutArgument x:TypeArguments="x:String">[strAppPassword]</OutArgument>
       </Assign.To>
@@ -105,21 +122,21 @@
         <InArgument x:TypeArguments="x:String">[Environment.GetEnvironmentVariable("GMAIL_APP_PASSWORD")]</InArgument>
       </Assign.Value>
     </Assign>
-    <If Condition="[String.IsNullOrEmpty(strAppPassword)]" DisplayName="If 앱 비밀번호 미설정 → 발송 스킵" sap:VirtualizedContainerService.HintSize="492,440" sap2010:WorkflowViewState.IdRef="If_2">
+    <If Condition="[String.IsNullOrEmpty(strAppPassword)]" DisplayName="If 앱 비밀번호 미설정 → 발송 스킵" sap:VirtualizedContainerService.HintSize="494,740.6666666666666" sap2010:WorkflowViewState.IdRef="If_2">
       <If.Then>
-        <ui:LogMessage DisplayName="Log 앱비밀번호 미설정 경고" sap:VirtualizedContainerService.HintSize="416,107" sap2010:WorkflowViewState.IdRef="LogMessage_2" Level="Warn" Message="[&quot;GMAIL_APP_PASSWORD 환경변수 미설정 - 긴급 메일 발송 스킵. setx GMAIL_APP_PASSWORD &lt;앱비밀번호&gt; 후 재실행하세요.&quot;]" />
+        <ui:LogMessage DisplayName="Log 앱비밀번호 미설정 경고" sap:VirtualizedContainerService.HintSize="492,144.66666666666666" sap2010:WorkflowViewState.IdRef="LogMessage_2" Level="Warn" Message="[&quot;앱 비밀번호가 설정되지 않아 메일 발송을 건너뜁니다. 환경변수 GMAIL_APP_PASSWORD를 확인하세요.&quot;]" />
       </If.Then>
       <If.Else>
-        <ui:RetryScope DisplayName="Retry 3회 (SMTP 메일 발송)" sap:VirtualizedContainerService.HintSize="450,400" sap2010:WorkflowViewState.IdRef="RetryScope_1" NumberOfRetries="3" RetryInterval="00:00:05">
+        <ui:RetryScope DisplayName="Retry 3회 (SMTP 메일 발송)" sap:VirtualizedContainerService.HintSize="492,412" sap2010:WorkflowViewState.IdRef="RetryScope_1" NumberOfRetries="3" RetryInterval="00:00:05">
           <ui:RetryScope.ActivityBody>
             <ActivityAction>
-              <Sequence DisplayName="메일 발송" sap:VirtualizedContainerService.HintSize="450,231" sap2010:WorkflowViewState.IdRef="Sequence_2">
+              <Sequence DisplayName="메일 발송" sap:VirtualizedContainerService.HintSize="450,233.33333333333334" sap2010:WorkflowViewState.IdRef="Sequence_2">
                 <sap:WorkflowViewStateService.ViewState>
                   <scg:Dictionary x:TypeArguments="x:String, x:Object">
                     <x:Boolean x:Key="IsExpanded">True</x:Boolean>
                   </scg:Dictionary>
                 </sap:WorkflowViewStateService.ViewState>
-                <ui:SendMail Bcc="{x:Null}" Cc="{x:Null}" ContinueOnError="{x:Null}" From="{x:Null}" MailMessage="{x:Null}" Name="{x:Null}" ReplyTo="{x:Null}" Result="{x:Null}" SecurePassword="{x:Null}" TimeoutMS="{x:Null}" UseOAuth="{x:Null}" Body="[strBody]" DisplayName="Send SMTP Mail (Gmail)" Email="a01039261344@gmail.com" EnableSSL="True" IgnoreCRL="False" IsBodyHtml="False" Password="[strAppPassword]" Port="587" sap:VirtualizedContainerService.HintSize="416,171" sap2010:WorkflowViewState.IdRef="SendMail_1" SecureConnection="Auto" Server="smtp.gmail.com" Subject="[strSubject]" To="a01039261344@gmail.com">
+                <ui:SendMail Bcc="{x:Null}" Cc="{x:Null}" ContinueOnError="{x:Null}" From="{x:Null}" MailMessage="{x:Null}" Name="{x:Null}" ReplyTo="{x:Null}" Result="{x:Null}" SecurePassword="{x:Null}" TimeoutMS="{x:Null}" UseOAuth="{x:Null}" Body="[strBody]" DisplayName="Send SMTP Mail (Gmail)" Email="a01039261344@gmail.com" EnableSSL="True" sap:VirtualizedContainerService.HintSize="416,173.33333333333334" sap2010:WorkflowViewState.IdRef="SendMail_1" IgnoreCRL="False" IsBodyHtml="False" Password="[strAppPassword]" Port="587" SecureConnection="Auto" Server="smtp.gmail.com" Subject="[strSubject]" To="&lt;수신자 이메일&gt;">
                   <ui:SendMail.Files>
                     <scg:List x:TypeArguments="InArgument(x:String)" Capacity="1">
                       <InArgument x:TypeArguments="x:String">[strReportPath]</InArgument>
@@ -135,6 +152,6 @@
         </ui:RetryScope>
       </If.Else>
     </If>
-    <ui:LogMessage DisplayName="Log 메일 발송" sap:VirtualizedContainerService.HintSize="492,166" sap2010:WorkflowViewState.IdRef="LogMessage_1" Level="Info" Message="[&quot;긴급 메일 처리 완료: &quot; &amp; strSubject]" />
+    <ui:LogMessage DisplayName="Log 메일 발송" sap:VirtualizedContainerService.HintSize="494,167.33333333333334" sap2010:WorkflowViewState.IdRef="LogMessage_1" Level="Info" Message="[&quot;긴급 메일 처리 완료: &quot; &amp; strSubject]" />
   </Sequence>
 </Activity>
