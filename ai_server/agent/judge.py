@@ -76,17 +76,20 @@ def judge_evaluate(review: dict, result: dict) -> dict:
 
 
 def judge_batch(reviews: list[dict], results: list[dict]) -> dict[str, dict]:
-    """rule 통과분 전체를 1회 호출로 평가. {review_id: {score, passed, reasoning}} 반환."""
     if not reviews:
         return {}
     client = get_client()
-    resp = client.responses.create(
+    prompt = JUDGE_PROMPT + "\n\n" + build_batch_judge_input(reviews, results) + "\n\n반드시 JSON만 출력하고, ```json 같은 마크다운 없이 순수 JSON만 반환하라."
+    resp = client.models.generate_content(
         model=JUDGE_MODEL,
-        instructions=JUDGE_PROMPT,
-        input=[{"role": "user", "content": build_batch_judge_input(reviews, results)}],
-        text=_JUDGE_BATCH_FORMAT,
+        contents=prompt,
     )
-    evals = json.loads(resp.output_text).get("evaluations", [])
+    raw = resp.text.strip().removeprefix("```json").removeprefix("```").removesuffix("```").strip()
+    parsed = json.loads(raw)
+    if isinstance(parsed, list):
+        evals = parsed
+    else:
+        evals = parsed.get("evaluations", [])
     out: dict[str, dict] = {}
     for e in evals:
         score = int(e["score"])

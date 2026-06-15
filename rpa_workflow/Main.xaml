@@ -58,7 +58,7 @@
       <AssemblyReference>System.Runtime.Numerics</AssemblyReference>
     </scg:List>
   </TextExpression.ReferencesForImplementation>
-  <Sequence sap2010:Annotation.AnnotationText="수집→HTTP→처리→분기메일→종합→검증. in_GoodsUrl로 상품 URL 주입(403 차단 대응, 사용자가 Windows 브라우저서 복붙)." DisplayName="Main - 오케스트레이션 (PRD §5.3)" sap:VirtualizedContainerService.HintSize="528,2845.3333333333335" sap2010:WorkflowViewState.IdRef="Sequence_3">
+  <Sequence sap2010:Annotation.AnnotationText="수집→HTTP→처리→분기메일→종합→검증. in_GoodsUrl로 상품 URL 주입(403 차단 대응, 사용자가 Windows 브라우저서 복붙)." DisplayName="Main - 오케스트레이션 (PRD §5.3)" sap:VirtualizedContainerService.HintSize="535.3333333333333,2845.3333333333335" sap2010:WorkflowViewState.IdRef="Sequence_3">
     <Sequence.Variables>
       <Variable x:TypeArguments="sd:DataTable" Name="dtReviews" />
       <Variable x:TypeArguments="sd:DataTable" Name="dtResults" />
@@ -72,6 +72,7 @@
     <sap:WorkflowViewStateService.ViewState>
       <scg:Dictionary x:TypeArguments="x:String, x:Object">
         <x:Boolean x:Key="IsExpanded">True</x:Boolean>
+        <x:Boolean x:Key="IsAnnotationDocked">False</x:Boolean>
       </scg:Dictionary>
     </sap:WorkflowViewStateService.ViewState>
     <Assign DisplayName="batch_id = yyyyMMdd_HHmmss" sap:VirtualizedContainerService.HintSize="528,176.66666666666666" sap2010:WorkflowViewState.IdRef="Assign_1">
@@ -146,7 +147,7 @@
               <OutArgument x:TypeArguments="njl:JObject" x:Key="out_SummaryJson">[jobjSummary]</OutArgument>
             </ui:InvokeWorkflowFile.Arguments>
           </ui:InvokeWorkflowFile>
-          <If Condition="[intDefectCount &gt; 0]" DisplayName="If 결함 &gt; 0" sap:VirtualizedContainerService.HintSize="492,752.6666666666666" sap2010:WorkflowViewState.IdRef="If_1">
+          <If Condition="[intDefectCount &gt;0]" DisplayName="If 결함 &gt; 0" sap:VirtualizedContainerService.HintSize="492,752.6666666666666" sap2010:WorkflowViewState.IdRef="If_1">
             <If.Then>
               <Sequence DisplayName="Then" sap:VirtualizedContainerService.HintSize="450,522" sap2010:WorkflowViewState.IdRef="Sequence_6">
                 <sap:WorkflowViewStateService.ViewState>

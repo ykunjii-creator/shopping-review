@@ -89,22 +89,20 @@ def _unclassified(review: dict, reason: str) -> dict:
 
 
 def analyze_batch(reviews: list[dict]) -> list[dict]:
-    """리뷰 N건을 1회 호출로 분석. 입력 순서대로 결과 리스트 반환.
-
-    모델 응답을 review_id로 매핑하고, 누락분은 미분류로 채운다. 부서/메일은
-    Python이 카테고리로 결정적으로 주입한다(모델은 카테고리만 판단).
-    """
     if not reviews:
         return []
     client = get_client()
-    resp = client.responses.create(
+    prompt = BATCH_SYSTEM_PROMPT + "\n\n" + build_batch_analysis_input(reviews) + "\n\n반드시 JSON만 출력하고, ```json 같은 마크다운 없이 순수 JSON만 반환하라."
+    resp = client.models.generate_content(
         model=MAIN_MODEL,
-        instructions=BATCH_SYSTEM_PROMPT,
-        input=[{"role": "user", "content": build_batch_analysis_input(reviews)}],
-        text=_ANALYSIS_BATCH_FORMAT,
-        reasoning={"effort": "low"},
+        contents=prompt,
     )
-    analyses = json.loads(resp.output_text).get("analyses", [])
+    raw = resp.text.strip().removeprefix("```json").removeprefix("```").removesuffix("```").strip()
+    parsed = json.loads(raw)
+    if isinstance(parsed, list):
+        analyses = parsed
+    else:
+        analyses = parsed.get("analyses", [])
     by_id = {a.get("review_id"): a for a in analyses}
 
     out: list[dict] = []

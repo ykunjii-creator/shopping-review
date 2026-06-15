@@ -46,7 +46,7 @@
       <AssemblyReference>System.Runtime.Serialization.Primitives</AssemblyReference>
     </scg:List>
   </TextExpression.ReferencesForImplementation>
-  <Sequence sap2010:Annotation.AnnotationText="제품결함 필터 → 긴급_품질결함_리포트_*.xlsx → Gmail SMTP 메일 3회 재시도. 앱 비밀번호는 환경변수 GMAIL_APP_PASSWORD." DisplayName="Send_Urgent_Mail - 긴급 품질결함 메일 (PRD §5.6)" sap:VirtualizedContainerService.HintSize="520,2754.6666666666665" sap2010:WorkflowViewState.IdRef="Sequence_3">
+  <Sequence sap2010:Annotation.AnnotationText="제품결함 필터 → 긴급_품질결함_리포트_*.xlsx → Gmail SMTP 메일 3회 재시도. 앱 비밀번호는 환경변수 GMAIL_APP_PASSWORD." DisplayName="Send_Urgent_Mail - 긴급 품질결함 메일 (PRD §5.6)" sap:VirtualizedContainerService.HintSize="573.3333333333333,2754.6666666666665" sap2010:WorkflowViewState.IdRef="Sequence_3">
     <Sequence.Variables>
       <Variable x:TypeArguments="sd:DataTable" Name="dtDefects" />
       <Variable x:TypeArguments="x:String" Name="strReportPath" />
@@ -136,7 +136,7 @@
                     <x:Boolean x:Key="IsExpanded">True</x:Boolean>
                   </scg:Dictionary>
                 </sap:WorkflowViewStateService.ViewState>
-                <ui:SendMail Bcc="{x:Null}" Cc="{x:Null}" ContinueOnError="{x:Null}" From="{x:Null}" MailMessage="{x:Null}" Name="{x:Null}" ReplyTo="{x:Null}" Result="{x:Null}" SecurePassword="{x:Null}" TimeoutMS="{x:Null}" UseOAuth="{x:Null}" Body="[strBody]" DisplayName="Send SMTP Mail (Gmail)" Email="a01039261344@gmail.com" EnableSSL="True" sap:VirtualizedContainerService.HintSize="416,173.33333333333334" sap2010:WorkflowViewState.IdRef="SendMail_1" IgnoreCRL="False" IsBodyHtml="False" Password="[strAppPassword]" Port="587" SecureConnection="Auto" Server="smtp.gmail.com" Subject="[strSubject]" To="&lt;수신자 이메일&gt;">
+                <ui:SendMail Bcc="{x:Null}" Cc="{x:Null}" ContinueOnError="{x:Null}" From="{x:Null}" MailMessage="{x:Null}" Name="{x:Null}" ReplyTo="{x:Null}" Result="{x:Null}" SecurePassword="{x:Null}" TimeoutMS="{x:Null}" UseOAuth="{x:Null}" Body="[strBody]" DisplayName="Send SMTP Mail (Gmail)" Email="abc@gmail.com" EnableSSL="True" sap:VirtualizedContainerService.HintSize="416,173.33333333333334" sap2010:WorkflowViewState.IdRef="SendMail_1" IgnoreCRL="False" IsBodyHtml="False" Password="[strAppPassword]" Port="587" SecureConnection="Auto" Server="smtp.gmail.com" Subject="[strSubject]" To="abc@gmail.com">
                   <ui:SendMail.Files>
                     <scg:List x:TypeArguments="InArgument(x:String)" Capacity="1">
                       <InArgument x:TypeArguments="x:String">[strReportPath]</InArgument>

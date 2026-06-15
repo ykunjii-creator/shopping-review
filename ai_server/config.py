@@ -39,10 +39,10 @@ def _get_bool(key: str, default: bool) -> bool:
 
 
 # --- 설정값 (tech-spec §6 .env) ---
-OPENAI_API_KEY: str | None = os.getenv("OPENAI_API_KEY")
+GEMINI_API_KEY: str | None = os.getenv("GEMINI_API_KEY")
 SERVER_PORT: int = _get_int("SERVER_PORT", 8000)
-MAIN_MODEL: str = os.getenv("MAIN_MODEL", "gpt-5.4-mini")
-JUDGE_MODEL: str = os.getenv("JUDGE_MODEL", "gpt-5.4-nano")
+MAIN_MODEL: str = os.getenv("MAIN_MODEL", "gemini-2.0-flash")
+JUDGE_MODEL: str = os.getenv("JUDGE_MODEL", "gemini-2.0-flash")
 MAX_ITERATIONS: int = _get_int("MAX_ITERATIONS", 5)
 JUDGE_PASS_THRESHOLD: int = _get_int("JUDGE_PASS_THRESHOLD", 7)
 CONFIDENCE_THRESHOLD: float = _get_float("CONFIDENCE_THRESHOLD", 0.7)
@@ -55,14 +55,9 @@ UNCLASSIFIED: str = "미분류"
 DEPARTMENT_MAP_PATH = BASE_DIR / "data" / "department_map.json"
 GROUND_TRUTH_PATH = BASE_DIR / "data" / "ground_truth.json"
 
-
 @lru_cache(maxsize=1)
 def get_client():
-    """OpenAI 클라이언트 singleton. 키 없으면 RuntimeError (호출 시점에만)."""
-    if not OPENAI_API_KEY:
-        raise RuntimeError(
-            "OPENAI_API_KEY 미설정. ai_server/.env 에 키를 넣으세요 (.env.example 참고)."
-        )
-    from openai import OpenAI
-
-    return OpenAI(api_key=OPENAI_API_KEY)
+    if not GEMINI_API_KEY:
+        raise RuntimeError("GEMINI_API_KEY 미설정. ai_server/.env 에 키를 넣으세요.")
+    from google import genai
+    return genai.Client(api_key=GEMINI_API_KEY)

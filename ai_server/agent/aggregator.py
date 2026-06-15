@@ -33,21 +33,17 @@ _DEFECT_FORMAT = {
 
 
 def _llm_cluster_defects(summaries: list[str]) -> dict:
-    """제품결함 summary들을 결함유형별 빈도로 클러스터 (gpt-5.4-mini 재호출).
-
-    LLM 불가/실패 시 summary 원문 빈도로 폴백.
-    """
     if not summaries:
         return {}
     try:
         client = get_client()
-        resp = client.responses.create(
+        prompt = build_defect_cluster_input(summaries) + "\n\n반드시 JSON만 출력하고, ```json 같은 마크다운 없이 순수 JSON만 반환하라."
+        resp = client.models.generate_content(
             model=MAIN_MODEL,
-            input=[{"role": "user", "content": build_defect_cluster_input(summaries)}],
-            text=_DEFECT_FORMAT,
-            reasoning={"effort": "low"},
+            contents=prompt,
         )
-        return json.loads(resp.output_text).get("defect_types", {})
+        raw = resp.text.strip().removeprefix("```json").removeprefix("```").removesuffix("```").strip()
+        return json.loads(raw).get("defect_types", {})
     except Exception:
         return dict(Counter(summaries))
 
